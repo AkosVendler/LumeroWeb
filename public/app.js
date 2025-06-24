@@ -11,7 +11,7 @@ async function login() {
     const password = document.getElementById('pass').value;
 
     try {
-      const res = await fetch('http://localhost:3000/login', {
+      const res = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
