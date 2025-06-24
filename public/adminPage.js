@@ -21,7 +21,7 @@ fetch('/admin/data')
 
     .catch(err => {
         console.error('Hiba az admin adatok lekérésekor:', err);
-        window.location.href = '/login';
+        window.location.href = '/login.html';
     });
 
 // Megjelenítés vezérlése
