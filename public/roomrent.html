@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumero | Terembérlés</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+</head>
+<body>
+    <nav style="margin-bottom: 30vh;">
+        <div class="logo">
+            <a href="/">Lumero</a>
+        </div>
+    
+        <!-- Hamburger ikon -->
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </div>
+    
+        <!-- Normál linkek desktopon -->
+        <div class="links">
+            <a href="/about.html">About</a>
+    
+            <div class="dropdown">
+                <button class="dropbtn">
+                    Services <img class="menu-arrow" src="./assets/downarrow.svg">
+                </button>
+                <div class="dropdown-content">
+                    <a href="/roomrent.html">Terembérlés</a>
+                    <a href="#">Catering</a>
+                    <a href="#">Rendezvényszervezés</a>
+                </div>
+            </div>
+    
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a>News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+    
+        <!-- Mobil menü (alapból rejtett) -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/about.html">About</a>
+            <a href="/roomrent.html">Terembérlés</a>
+            <a href="#">Catering</a>
+            <a href="#">Rendezvényszervezés</a>
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a>News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+    </nav>
+
+    <div class="roomrent">
+        <h1>Ahogy a program igényli</h1>
+        <p>Teremts értéket különleges környezetben!</p>
+    </div>
+
+    <div class="rooms">
+        <div class="room-row">
+            <div class="row-left">
+                <img src="./assets/IMG_6186.jpeg">
+                <div class="room-text">
+                    <h1>Herz Miksa terem</h1>
+                    <p>A kisebb alapterületű terem 8 fő számára nyújtkényelmes teret klasszikus kárpitozott bútorokkal,projektorral és nagymérető whiteboarddal felszerelve a tökéletes tárgyalások érdekében.</p>
+                </div> 
+            </div>
+            <img class="room-arrow" src="./assets/more.svg">
+        </div>
+        <div class="room-row">
+            <div class="row-left">
+                <img src="./assets/IMG_6220.jpeg">
+                <div class="room-text">
+                    <h1>Engel Ignác terem</h1>
+                    <p>A különleges hangulatú, nagyobb méretű terem design bútorokkal berendezett, egy kis társalgó résszel, valamint nagyméretű TV és gurulós, 2 oldalú white boarddal várja a látogatókat.</p>
+                </div> 
+            </div>
+            <img class="room-arrow" src="./assets/more.svg">
+        </div>
+        <div class="room-row">
+            <div class="row-left">
+                <img src="./assets/IMG_6201.jpeg">
+                <div class="room-text">
+                    <h1>Tiétek az egész LUMERO</h1>
+                    <p>A közös tér 6–8 fős asztallal és társalgóval felszerelt, de igény szerint akár 18–20 fős ültetett rendezvénnyé is átalakítható. A mobil konyhasziget cateringhez vagy workshophoz is használható, a 27 nm-es függőfolyosón pedig szünetekben kellemes szabadtéri pihenésre is van lehetőség.</p>
+                </div> 
+            </div>
+            <img class="room-arrow" src="./assets/more.svg">
+        </div>
+    </div>
+    <footer>
+        <div class="left-footer">
+            <a>Lumero</a>
+        </div>
+        <div class="right-footer">
+            <div class="footer-col">
+                <p>Miskolc</p>
+                <p>Kazinzy ferenc utca 24</p>
+                <p>3525</p>
+            </div>
+            <div class="footer-col">
+                <p>Contact</p>
+                <p>Hello@lumero.com</p>
+                <p>© 2025 lumero</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('open');
+  }
+</script>
+</body>
+</html>

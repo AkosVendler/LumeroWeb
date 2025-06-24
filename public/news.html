@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMERO | News</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 15vh;">
+        <div class="logo">
+            <a href="/">Lumero</a>
+        </div>
+
+        <!-- Hamburger ikon -->
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Normál linkek desktopon -->
+        <div class="links">
+            <a href="/about.html">About</a>
+
+            <div class="dropdown">
+                <button class="dropbtn">
+                    Services <img class="menu-arrow" src="./assets/downarrow.svg">
+                </button>
+                <div class="dropdown-content">
+                    <a href="/roomrent.html">Terembérlés</a>
+                    <a href="#">Catering</a>
+                    <a href="#">Rendezvényszervezés</a>
+                </div>
+            </div>
+
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a href="news.html">News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+
+        <!-- Mobil menü (alapból rejtett) -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/about.html">About</a>
+            <a href="/roomrent.html">Terembérlés</a>
+            <a href="#">Catering</a>
+            <a href="#">Rendezvényszervezés</a>
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a href="news.html">News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+    </nav>
+
+    <h1 class="news-title">LUMERO HÍREK</h1>
+
+    <div class="news-rows" id="newsRows"></div>
+
+    <footer>
+        <div class="left-footer">
+            <a>Lumero</a>
+        </div>
+        <div class="right-footer">
+            <div class="footer-col">
+                <p>Miskolc</p>
+                <p>Kazinzy ferenc utca 24</p>
+                <p>3525</p>
+            </div>
+            <div class="footer-col">
+                <p>Contact</p>
+                <p>Hello@lumero.com</p>
+                <p>© 2025 lumero</p>
+            </div>
+        </div>
+    </footer>
+    <script src="getNews.js"></script>
+</body>
+</html>

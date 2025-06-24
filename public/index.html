@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+    <title>Lumero</title>
+</head>
+
+<body>
+    <nav style="margin-bottom: 30vh;">
+        <div class="logo">
+            <a href="/">Lumero</a>
+        </div>
+
+        <!-- Hamburger ikon -->
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Normál linkek desktopon -->
+        <div class="links">
+            <a href="/about.html">About</a>
+
+            <div class="dropdown">
+                <button class="dropbtn">
+                    Services <img class="menu-arrow" src="./assets/downarrow.svg">
+                </button>
+                <div class="dropdown-content">
+                    <a href="/roomrent.html">Terembérlés</a>
+                    <a href="#">Catering</a>
+                    <a href="#">Rendezvényszervezés</a>
+                </div>
+            </div>
+
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a href="news.html">News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+
+        <!-- Mobil menü (alapból rejtett) -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/about.html">About</a>
+            <a href="/roomrent.html">Terembérlés</a>
+            <a href="#">Catering</a>
+            <a href="#">Rendezvényszervezés</a>
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a href="news.html">News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1 class="split">Lumero</h1>
+        <img src="./assets/IMG_6167.jpeg" alt="hero-image">
+        <div class="hero-description">
+            <h2 class="desc-title">Üdvözlünk a LUMERO-ban!</h2>
+            <p class="desc">Miskolc exkluzív, privát meeting room-jában! A LUMERO egy prémium színvonalú, bérelhető
+                tréning- és workshop helyszín Miskolc belvárosában.</p>
+            <div class="desc-button">
+                <a href="" class="desc-link">Nézd meg az időpontokat</a>
+                <img src="./assets/landing.svg" alt="arrow">
+            </div>
+        </div>
+    </section>
+    <section class="line">
+        <marquee behavior="scroll" direction="left">
+            <span class="contrast">Contrast Design</span> <span class="normal">X</span> <span
+                class="lumero">Lumero</span>
+
+            <span class="contrast">Contrast Design</span> <span class="normal">X</span> <span
+                class="lumero">Lumero</span>
+
+            <span class="contrast">Contrast Design</span> <span class="normal">X</span> <span
+                class="lumero">Lumero</span>
+
+            <span class="contrast">Contrast Design</span> <span class="normal">X</span> <span
+                class="lumero">Lumero</span>
+
+            <span class="contrast">Contrast Design</span> <span class="normal">X</span> <span
+                class="lumero">Lumero</span>
+        </marquee>
+    </section>
+    <section class="about">
+        <div class="left-wrapper">
+            <h1 class="about-header">igényes és privát</h1>
+            <p class="about-text">A LUMERO-t belsőépítészeti szenvedéllyel, saját kezűleg alakítottuk ki a 110 éves
+                épület nagypolgári hangulatát megőrizve. A berendezés mögött sok éves multinacionális és
+                szervezetfejlesztési tapasztalat áll. Tökéletes helyszín workshopokhoz, tréningekhez, kisebb csapatépítő
+                eseményekhez vagy elegáns privát alkalmakhoz. Diszkrét jellege miatt ideális üzleti tárgyalásokhoz,
+                coachinghoz, pszichológiai vagy mediációs ülésekhez is.</p>
+            <div class="desc-button2">
+                <a href="" class="desc-link">Bővebb információt itt találsz</a>
+                <img src="./assets/landing.svg" alt="arrow">
+            </div>
+        </div>
+        <img class="right-wrapper" src="./assets/IMG_6203.jpeg" alt="about-img">
+    </section>
+    <footer>
+        <div class="left-footer">
+            <a>Lumero</a>
+        </div>
+        <div class="right-footer">
+            <div class="footer-col">
+                <p>Miskolc</p>
+                <p>Kazinzy ferenc utca 24</p>
+                <p>3525</p>
+            </div>
+            <div class="footer-col">
+                <p>Contact</p>
+                <p>Hello@lumero.com</p>
+                <p>© 2025 lumero</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+
+        gsap.registerPlugin(SplitText);
+        console.clear();
+
+        document.fonts.ready.then(() => {
+            gsap.set(".split", { opacity: 1 });
+
+            let split;
+            SplitText.create(".split", {
+                type: "words,lines",
+                linesClass: "line-mask",
+                autoSplit: true,
+                mask: "lines",
+                onSplit: (self) => {
+                    split = gsap.from(self.lines, {
+                        duration: 1.5,
+                        yPercent: 300,
+                        opacity: 0,
+                        stagger: 0.5,
+                        ease: "expo.out",
+                    });
+                    return split;
+                }
+            });
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>

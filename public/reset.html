@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumero | Jelszó visszaállítás</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+</head>
+<body>
+    <nav style="margin-bottom: 10vh;">
+        <div class="logo">
+          <a href="/">Lumero</a>
+      </div>
+  
+      <!-- Hamburger ikon -->
+      <div class="hamburger" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+      </div>
+  
+      <!-- Normál linkek desktopon -->
+      <div class="links">
+          <a href="/about.html">About</a>
+  
+          <div class="dropdown">
+              <button class="dropbtn">
+                  Services <img class="menu-arrow" src="./assets/downarrow.svg">
+              </button>
+              <div class="dropdown-content">
+                  <a href="/roomrent.html">Terembérlés</a>
+                  <a href="#">Catering</a>
+                  <a href="#">Rendezvényszervezés</a>
+              </div>
+          </div>
+  
+          <a>Booking</a>
+          <a href="">Gallery</a>
+          <a>News</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/login.html">Account</a>
+      </div>
+  
+      <!-- Mobil menü (alapból rejtett) -->
+      <div class="mobile-menu" id="mobileMenu">
+          <a href="/about.html">About</a>
+          <a href="/roomrent.html">Terembérlés</a>
+          <a href="#">Catering</a>
+          <a href="#">Rendezvényszervezés</a>
+          <a>Booking</a>
+          <a href="">Gallery</a>
+          <a>News</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/login.html">Account</a>
+      </div>
+      </nav>
+    <div class="reset-container">
+        <h1>Állítsd vissza a jelszavadat</h1>
+        <p>Add meg az email címedet a fiókod jelszavának visszaállításához</p>
+        <input class="reset-email" type="email" name="email" id="email">
+        <button class="reset-button" type="submit">Jelszó visszaállítása</button>
+    </div>
+    <script src="ResetPassword.js"></script>
+</body>
+</html>

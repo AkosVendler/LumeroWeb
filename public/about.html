@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumero | About Us</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+</head>
+<body>
+    <nav style="margin-bottom: 10vh;">
+      <div class="logo">
+        <a href="/">Lumero</a>
+    </div>
+
+    <!-- Hamburger ikon -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Normál linkek desktopon -->
+    <div class="links">
+        <a href="/about.html">About</a>
+
+        <div class="dropdown">
+            <button class="dropbtn">
+                Services <img class="menu-arrow" src="./assets/downarrow.svg">
+            </button>
+            <div class="dropdown-content">
+                <a href="/roomrent.html">Terembérlés</a>
+                <a href="#">Catering</a>
+                <a href="#">Rendezvényszervezés</a>
+            </div>
+        </div>
+
+        <a>Booking</a>
+        <a href="">Gallery</a>
+        <a>News</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/login.html">Account</a>
+    </div>
+
+    <!-- Mobil menü (alapból rejtett) -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/about.html">About</a>
+        <a href="/roomrent.html">Terembérlés</a>
+        <a href="#">Catering</a>
+        <a href="#">Rendezvényszervezés</a>
+        <a>Booking</a>
+        <a href="">Gallery</a>
+        <a>News</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/login.html">Account</a>
+    </div>
+    </nav>
+    <section class="about-page-header">
+        <div class="left-content">
+            <h1>Egy tér – több funkció</h1>
+            <p>A terek rugalmasan alakíthatók: a váró/ társalgó mellett egy elegáns, nagy közös tér, valamint két szeparált, minden szükséges technológiával és eszközzel felszerelt 8-8 fős helyiség áll rendelkezésre. A helyszín összesen akár 20 fő befogadására is alkalmas.</p>
+        </div>
+        <img src="./assets/IMG_6182.jpeg" alt="about img">
+    </section>
+
+    <section class="text-section">
+        <div class="text-block">
+          <p>
+            A külön termek ideálisak tárgyalásokhoz vagy ülésekhez, de kiválóan használhatók tréningek, workshopok esetén csoportbontásra is. A közös nagy tér rugalmasan formálható, így akár 20 fős konferencia vagy vacsorahelyszínné is alakítható.
+          </p>
+        </div>
+        <div class="text-block">
+          <p>
+            A minden szükséges high-tech eszközzel felszerelt konyha kislétszámú kulináris csapatépítők, workshopok helyszíne lehet, vagy exkluzív vacsorához akár egy privát chef birodalma.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <div class="left-footer">
+            <a>Lumero</a>
+        </div>
+        <div class="right-footer">
+            <div class="footer-col">
+                <p>Miskolc</p>
+                <p>Kazinzy ferenc utca 24</p>
+                <p>3525</p>
+            </div>
+            <div class="footer-col">
+                <p>Contact</p>
+                <p>Hello@lumero.com</p>
+                <p>© 2025 lumero</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+              function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

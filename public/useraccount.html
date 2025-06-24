@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumero | ACCOUNT</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+</head>
+
+<body>
+    <nav style="margin-bottom: 0vh;">
+        <div class="logo">
+            <a href="/">Lumero</a>
+        </div>
+
+        <!-- Hamburger ikon -->
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Normál linkek desktopon -->
+        <div class="links">
+            <a href="/about.html">About</a>
+
+            <div class="dropdown">
+                <button class="dropbtn">
+                    Services <img class="menu-arrow" src="./assets/downarrow.svg">
+                </button>
+                <div class="dropdown-content">
+                    <a href="/roomrent.html">Terembérlés</a>
+                    <a href="#">Catering</a>
+                    <a href="#">Rendezvényszervezés</a>
+                </div>
+            </div>
+
+            <a>Booking</a>
+            <a href="">Gallery</a>
+            <a>News</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html">Account</a>
+        </div>
+    </nav>
+
+    <div class="hello">
+        <h1>Üdvözlünk, <span id="user-name"></span></h1>
+    </div>
+    <div class="account-wrapper">
+        <div class="account-nav">
+            <a href="#notifi">Értesítések</a>
+            <a href="#rewards">Jutalmak</a>
+            <a href="">Foglalások</a>
+            <a href="">Fiók beállítások</a>
+            <a id="logout" href="/logout">Kijelentkezés</a>
+        </div>
+        <div class="account-content">
+            <div id="notifi" class="account-notifications">
+                <h1 class="account-title">Értesítések</h1>
+            </div>
+            <div id="rewards" class="account-rewards">
+                <h1 class="account-title">Jutalmak</h1>
+            </div>
+            <div id="reservations" class="account-reservations">
+                <h1 class="account-title">Foglalások</h1>
+            </div>
+            <div class="account-settings">
+                <h1 class="account-title">Fiók beállítások</h1>
+                <div class="container">
+                    <!-- Bal oszlop -->
+                    <div class="column">
+                        <h2>Jelszóváltoztatás</h2>
+                        <label for="old-password">Régi jelszó</label>
+                        <input type="password" id="old-password" name="old-password">
+
+                        <label for="new-password">Új jelszó</label>
+                        <input type="password" id="new-password" name="new-password">
+
+                        <label for="confirm-password">Új jelszó ismétlése</label>
+                        <input type="password" id="confirm-password" name="confirm-password">
+                        <button id="change-password-btn">Jelszó frissítése</button>
+                        <div id="feedback" class="message"></div>
+                    </div>
+
+                    <!-- Jobb oszlop -->
+                    <div class="column">
+                        <h2>További beállítások</h2>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notifications" name="notifications">
+                            Kérek értesítést az eseményekről
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+    </script>
+    <script src="getUser.js"></script>
+    <script src="getUserNotification.js"></script>
+    <script src="getUserDiscounts.js"></script>
+    <script src="getUserReservations.js"></script>
+    <script src="userPasswordUpdate.js"></script>
+</body>
+
+</html>
