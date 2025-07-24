@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumero | Foglalás</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="boska.css">
+  </head>
+  <body>
+    <nav style="margin-bottom: 5vh;">
+      <div class="logo">
+          <a href="/">Lumero</a>
+      </div>
+  
+      <!-- Hamburger ikon -->
+      <div class="hamburger" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+      </div>
+  
+      <!-- Normál linkek desktopon -->
+      <div class="links">
+          <a href="/about.html">About</a>
+  
+          <div class="dropdown">
+              <button class="dropbtn">
+                  Services <img class="menu-arrow" src="./assets/downarrow.svg">
+              </button>
+              <div class="dropdown-content">
+                  <a href="/roomrent.html">Terembérlés</a>
+                  <a href="#">Catering</a>
+                  <a href="#">Rendezvényszervezés</a>
+              </div>
+          </div>
+  
+          <a>Booking</a>
+          <a href="/gallery.html">Gallery</a>
+          <a href="news.html">News</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/login.html">Account</a>
+      </div>
+  
+      <!-- Mobil menü (alapból rejtett) -->
+      <div class="mobile-menu" id="mobileMenu">
+          <a href="/about.html">About</a>
+          <a href="/roomrent.html">Terembérlés</a>
+          <a href="#">Catering</a>
+          <a href="#">Rendezvényszervezés</a>
+          <a>Booking</a>
+          <a href="/gallery.html">Gallery</a>
+          <a href="news.html">News</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/login.html">Account</a>
+      </div>
+  </nav>
+
+
+  <div class="book-title">
+    <h1>Foglalj most</h1>
+  </div>
+
+  <div class="form-container">
+    <form id="bookingForm">
+      <div class="row">
+        <div class="field">
+          <label for="fullname">Teljes név <span id="star">*</span></label>
+          <input type="text" id="fullname" class="input-fullname" required />
+        </div>
+        <div class="field">
+          <label for="roomtype">Szoba <span id="star">*</span></label>
+          <select id="roomtype" class="select-roomtype" required>
+            <option value="">Válassz</option>
+            <option>Herz Miksa Terem</option>
+            <option>Engel Ignác terem</option>
+            <option>Tiétek az egész LUMERO</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="phone">Telefonszám <span id="star">*</span></label>
+          <input type="tel" id="phone" class="input-phone" required />
+        </div>
+        <div class="field">
+          <label for="email">Email cím<span id="star">*</span></label>
+          <input type="email" id="email" class="input-email" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+            <label for="date">Melyik nap? <span>*</span></label>
+            <button type="button" id="openCalendarBtn" class="btn-open-calendar">Dátum választása</button>
+            <input type="hidden" id="date" class="input-date" required>
+          </div>
+          
+          <!-- Modal naptár -->
+          <div id="calendarModal">
+            <div class="modal-content">
+              <button class="close">&times;</button>
+              <div class="calendar-header">
+                <button id="prevMonth">←</button>
+                <span id="calendarMonth">2025. Június</span>
+                <button id="nextMonth">→</button>
+              </div>
+              
+              <!-- Naptár -->
+              <div class="custom-calendar">
+                
+              </div>
+          
+              <!-- Jobb oldali panel -->
+              <div class="time-selector">
+                <div>
+                  
+                  <label for="startTime">Kiválasztott időpont:</label>
+                  <select class="select-start-time" id="startTime" disabled>
+                    <option value="">Válassz érkezési időt</option>
+                  </select>
+                </div>
+          
+              </div>
+            </div>
+          </div>
+          
+        <div class="field">
+          <label for="time">Mennyit maradsz? <span id="star">*</span></label>
+          <select id="time" class="select-time" required>
+            <option value="">Időtartam</option>
+            <option>1 óra</option>
+            <option>2 óra</option>
+            <option>3 óra</option>
+            <option>4 óra</option>
+            <option>5 óra</option>
+            <option>Teljes nap</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field full-width">
+        <label for="people">Mennyien jönnétek? <span id="star">*</span></label>
+        <input type="number" id="people" class="input-people" required />
+      </div>
+
+      <div class="field full-width">
+        <label for="message">Üzenet (max 200 character)</label>
+        <textarea id="message" class="textarea-message" maxlength="200"></textarea>
+        <div class="char-counter" id="char-count">0/200</div>
+      </div>
+
+      <div class="row checkboxes">
+        <label><input type="checkbox" class="checkbox-date-1" /> Catering </label>
+        <label><input type="checkbox" class="checkbox-date-2" /> Rendezvényszervezés </label>
+        <label><input type="checkbox" class="checkbox-date-3" /> Dekoráció </label>
+      </div>
+
+      <div class="notice">
+        <strong>Catering vagy rendezvényszervezés esetég egyedi ajánlat kérés szükséges!</strong>
+        <label class="checkbox-row">
+          <input type="checkbox" class="checkbox-custom" />
+          Please check this if you are blah blah <a href="#">link</a> *
+        </label>
+      </div>
+
+      <button type="submit" class="btn-submit">Foglalok!</button>
+    </form>
+  </div>
+
+  <footer>
+    <div class="left-footer">
+        <a>Lumero</a>
+    </div>
+    <div class="right-footer">
+        <div class="footer-col">
+            <p>Miskolc</p>
+            <p>Kazinzy ferenc utca 24</p>
+            <p>3525</p>
+        </div>
+        <div class="footer-col">
+            <p>Contact</p>
+            <p>Hello@lumero.com</p>
+            <p>© 2025 lumero</p>
+        </div>
+    </div>
+</footer>
+<script>
+    function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+</script>
+<script src="booking.js"></script>
+<script src="calendar.js"></script>
+</body>
+</html>

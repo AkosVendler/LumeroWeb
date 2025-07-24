@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(discounts => {
         const rewardsContainer = document.getElementById('rewards');
   
+        if (!discounts || discounts.length === 0) {
+          const noDiscount = document.createElement('p');
+          noDiscount.textContent = 'Jelenleg nincs aktív kedvezmény.';
+          noDiscount.classList.add('no-discount'); // ha szeretnél rá stílust
+          rewardsContainer.appendChild(noDiscount);
+          return;
+        }
+
         discounts.forEach(discount => {
           const discountDiv = document.createElement('div');
           discountDiv.classList.add('discount');

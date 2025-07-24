@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,23 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="boska.css">
 </head>
+
 <body>
     <nav style="margin-bottom: 30vh;">
         <div class="logo">
             <a href="/">Lumero</a>
         </div>
-    
+
         <!-- Hamburger ikon -->
         <div class="hamburger" onclick="toggleMenu()">
             <span></span>
             <span></span>
         </div>
-    
+
         <!-- Normál linkek desktopon -->
         <div class="links">
             <a href="/about.html">About</a>
-    
+
             <div class="dropdown">
                 <button class="dropbtn">
                     Services <img class="menu-arrow" src="./assets/downarrow.svg">
@@ -33,23 +35,23 @@
                     <a href="#">Rendezvényszervezés</a>
                 </div>
             </div>
-    
-            <a>Booking</a>
-            <a href="">Gallery</a>
-            <a>News</a>
+
+            <a href="/booking.html">Booking</a>
+            <a href="/gallery.html">Gallery</a>
+            <a href="/news.html">News</a>
             <a href="/contact.html">Contact</a>
             <a href="/login.html">Account</a>
         </div>
-    
+
         <!-- Mobil menü (alapból rejtett) -->
         <div class="mobile-menu" id="mobileMenu">
             <a href="/about.html">About</a>
             <a href="/roomrent.html">Terembérlés</a>
             <a href="#">Catering</a>
             <a href="#">Rendezvényszervezés</a>
-            <a>Booking</a>
-            <a href="">Gallery</a>
-            <a>News</a>
+            <a href="/booking.html">Booking</a>
+            <a href="/gallery.html">Gallery</a>
+            <a href="/news.html">News</a>
             <a href="/contact.html">Contact</a>
             <a href="/login.html">Account</a>
         </div>
@@ -61,59 +63,162 @@
     </div>
 
     <div class="rooms">
-        <div class="room-row">
-            <div class="row-left">
-                <img src="./assets/IMG_6186.jpeg">
-                <div class="room-text">
-                    <h1>Herz Miksa terem</h1>
-                    <p>A kisebb alapterületű terem 8 fő számára nyújtkényelmes teret klasszikus kárpitozott bútorokkal,projektorral és nagymérető whiteboarddal felszerelve a tökéletes tárgyalások érdekében.</p>
-                </div> 
+        <div class="room-row" onmousemove="moveImages(event, 1)">
+          <div class="row-left">
+            <img src="./assets/IMG_6186.jpeg" />
+            <div class="room-text">
+              <h1>Herz Miksa terem</h1>
+              <p>A kisebb alapterületű terem 8 fő számára nyújt kényelmes teret klasszikus kárpitozott bútorokkal, projektorral és nagyméretű whiteboarddal felszerelve a tökéletes tárgyalások érdekében.</p>
             </div>
-            <img class="room-arrow" src="./assets/more.svg">
-        </div>
-        <div class="room-row">
-            <div class="row-left">
-                <img src="./assets/IMG_6220.jpeg">
-                <div class="room-text">
-                    <h1>Engel Ignác terem</h1>
-                    <p>A különleges hangulatú, nagyobb méretű terem design bútorokkal berendezett, egy kis társalgó résszel, valamint nagyméretű TV és gurulós, 2 oldalú white boarddal várja a látogatókat.</p>
-                </div> 
+          </div>
+          <img class="room-arrow" src="./assets/more.svg" />
+          <div class="hover-images" id="hoverImages1">
+            <div class="hover-image" style="z-index: 3; left: 40px; top: 20px;">
+              <img src="assets/1.png" />
             </div>
-            <img class="room-arrow" src="./assets/more.svg">
-        </div>
-        <div class="room-row">
-            <div class="row-left">
-                <img src="./assets/IMG_6201.jpeg">
-                <div class="room-text">
-                    <h1>Tiétek az egész LUMERO</h1>
-                    <p>A közös tér 6–8 fős asztallal és társalgóval felszerelt, de igény szerint akár 18–20 fős ültetett rendezvénnyé is átalakítható. A mobil konyhasziget cateringhez vagy workshophoz is használható, a 27 nm-es függőfolyosón pedig szünetekben kellemes szabadtéri pihenésre is van lehetőség.</p>
-                </div> 
+            <div class="hover-image" style="z-index: 2; left: 25px; top: 10px;">
+              <img src="assets/2.png" />
             </div>
-            <img class="room-arrow" src="./assets/more.svg">
-        </div>
-    </div>
-    <footer>
-        <div class="left-footer">
-            <a>Lumero</a>
-        </div>
-        <div class="right-footer">
-            <div class="footer-col">
-                <p>Miskolc</p>
-                <p>Kazinzy ferenc utca 24</p>
-                <p>3525</p>
+            <div class="hover-image" style="z-index: 1; left: 10px;">
+              <img src="assets/3.png" />
             </div>
-            <div class="footer-col">
-                <p>Contact</p>
-                <p>Hello@lumero.com</p>
-                <p>© 2025 lumero</p>
-            </div>
+          </div>
+          
         </div>
+      
+        <div class="room-row" onmousemove="moveImages(event, 2)">
+          <div class="row-left">
+            <img src="./assets/IMG_6220.jpeg" />
+            <div class="room-text">
+              <h1>Engel Ignác terem</h1>
+              <p>A különleges hangulatú, nagyobb méretű terem design bútorokkal berendezett, egy kis társalgó résszel, valamint nagyméretű TV és gurulós, 2 oldalú white boarddal várja a látogatókat.</p>
+            </div>
+          </div>
+          <img class="room-arrow" src="./assets/more.svg" />
+          <div class="hover-images" id="hoverImages2">
+            <div class="hover-image" style="z-index: 3; left: 40px; top: 20px;">
+              <img src="assets/4.png" />
+            </div>
+            <div class="hover-image" style="z-index: 2; left: 25px; top: 10px;">
+              <img src="assets/5.png" />
+            </div>
+            <div class="hover-image" style="z-index: 1; left: 10px;">
+              <img src="assets/6.png" />
+            </div>
+          </div>
+        </div>
+      
+        <div class="room-row" onmousemove="moveImages(event, 3)">
+          <div class="row-left">
+            <img src="./assets/IMG_6201.jpeg" />
+            <div class="room-text">
+              <h1>Tiétek az egész LUMERO</h1>
+              <p>A közös tér 6–8 fős asztallal és társalgóval felszerelt, de igény szerint akár 18–20 fős ültetett rendezvénnyé is átalakítható. A mobil konyhasziget cateringhez vagy workshophoz is használható, a 27 nm-es függőfolyosón pedig szünetekben kellemes szabadtéri pihenésre is van lehetőség.</p>
+            </div>
+          </div>
+          <img class="room-arrow" src="./assets/more.svg" />
+          <div class="hover-images" id="hoverImages3">
+            <div class="hover-image" style="z-index: 3; left: 40px; top: 20px;">
+              <img src="assets/7.png" />
+            </div>
+            <div class="hover-image" style="z-index: 2; left: 25px; top: 10px;">
+              <img src="assets/8.png" />
+            </div>
+            <div class="hover-image" style="z-index: 1; left: 10px;">
+              <img src="assets/9.png" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </footer>
     <script>
         function toggleMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('open');
-  }
-</script>
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+
+        const hoverStates = {};
+
+        function moveImages(e, index) {
+            const container = document.getElementById(`hoverImages${index}`);
+            const rect = container.parentElement.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left + 20;
+            const mouseY = e.clientY - rect.top + 20;
+
+            
+
+            if (!hoverStates[index]) {
+                // tároljuk a konténer pozícióját és a képek pozícióját is (mindegyik külön)
+                hoverStates[index] = {
+                    x: mouseX,
+                    y: mouseY,
+                    targetX: mouseX,
+                    targetY: mouseY,
+                    images: []
+                };
+
+                // inicializáljuk a képek állapotát is (0 pozícióval)
+                const images = container.querySelectorAll('.hover-image');
+                images.forEach((img, i) => {
+                    hoverStates[index].images[i] = {
+                        x: 0,
+                        y: 0,
+                        targetX: 0,
+                        targetY: 0,
+                        element: img
+                    };
+                });
+
+                animate(index, container);
+            }
+
+            hoverStates[index].targetX = mouseX;
+            hoverStates[index].targetY = mouseY;
+
+            // Beállítunk képenként eltérő target eltolást, pl. parallax-szerűen
+            hoverStates[index].images.forEach((imgState, i) => {
+                // Például minél hátrébb van (nagyobb index), annál kevésbé mozog
+                const movementFactor = 15 * (hoverStates[index].images.length - i) / hoverStates[index].images.length;
+
+                imgState.targetX = (mouseX - hoverStates[index].x) / movementFactor;
+                imgState.targetY = (mouseY - hoverStates[index].y) / movementFactor;
+            });
+        }
+
+        function animate(index, container) {
+            const state = hoverStates[index];
+
+            function lerp(start, end, amount) {
+                return (1 - amount) * start + amount * end;
+            }
+
+            function frame() {
+                // Konténer pozíciójának lerp-je (ez mozog késleltetve)
+                state.x = lerp(state.x, state.targetX, 0.1);
+                state.y = lerp(state.y, state.targetY, 0.1);
+
+                container.style.left = `${state.x}px`;
+                container.style.top = `${state.y}px`;
+
+                // Képek pozíciójának lerp-je (külön-külön)
+                state.images.forEach(imgState => {
+                    imgState.x = lerp(imgState.x, imgState.targetX, 1);
+                    imgState.y = lerp(imgState.y, imgState.targetY, 1);
+
+                    // Képek eltolása az alap pozícióhoz képest (ami CSS-ben van)
+                    imgState.element.style.transform = `translate(${imgState.x}px, ${imgState.y}px)`;
+
+                });
+
+                requestAnimationFrame(frame);
+            }
+
+            frame();
+        }
+
+    </script>
+
 </body>
+
 </html>

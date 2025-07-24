@@ -1914,21 +1914,12 @@ footer {
   border-top: #000 1px solid;
   padding: 5px 0px;
   box-sizing: border-box;
-}
-
-.room-row {
   cursor: pointer;
+  position: relative;
 }
 
 .room-row:nth-child(3) {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: #000 1px solid;
   border-bottom: #000 1px solid;
-  padding: 5px 0px;
-  box-sizing: border-box;
 }
 
 .row-left {
@@ -1957,6 +1948,100 @@ footer {
   aspect-ratio: 13 / 9;
   object-fit: cover;
 }
+
+
+/* 🔍 Hover preview képek egeret követve */
+
+.hover-preview {
+  position: absolute;
+  pointer-events: none;
+  z-index: 999;
+  /* Ez a rész lehet flex, ha kis képekről van szó */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hover-preview img {
+  width: 60px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: scale(0.8) translateY(10px);
+  animation: zoomIn 0.3s forwards;
+}
+
+.hover-images {
+  position: absolute;
+  pointer-events: none;
+  display: none;
+  z-index: 999;
+  width: 300px; /* vagy max-content is jó */
+  height: 250px;
+  /* display: flex; ezt vedd ki, vagy kommenteld ki */
+  /* flex-direction: column; ezt is */
+}
+
+/* FONTOS: ne legyen eltolás, hogy egymásra kerüljenek */
+.hover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1; /* alap z-index, felül állítjuk majd */
+}
+
+/* Állítsd be a helyes z-indexeket */
+
+.hover-image:nth-child(1) img {
+  animation-delay: 2s;
+  animation-timing-function: ease-out;
+  transform-origin: center bottom;
+  transform: scale(0.3) translateY(40px);
+}
+
+.hover-image:nth-child(2) img {
+  animation-delay: 1s;
+  animation-timing-function: ease-out;
+  transform-origin: center bottom;
+  transform: scale(0.3) translateY(20px);
+}
+
+.hover-image:nth-child(3) img {
+  animation-delay: 0;
+  animation-timing-function: ease-out;
+  transform-origin: center bottom;
+  transform: scale(0.3) translateY(0px);
+}
+
+/* Képek alappozíciója és animáció */
+.hover-image img {
+  width: 300px;
+  height: 250px;
+  object-fit: cover;
+  position: absolute;
+  opacity: 0;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  animation-fill-mode: forwards;
+  animation-name: zoomInStack;
+  animation-duration: 0.5s;
+}
+
+/* Hover megjelenítés */
+.room-row:hover .hover-images {
+  display: block;
+}
+
+/* Animáció kulcskockák */
+@keyframes zoomInStack {
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
 
 @media (min-width: 1921px) {
   .roomrent {
@@ -2738,6 +2823,8 @@ footer {
 
 .account-notifications {
   margin-bottom: 50px;
+  max-height: 400px;
+  overflow-y: scroll;
 }
 
 .account-title {
@@ -2796,6 +2883,10 @@ footer {
 }
 
 .reservation {
+  font-family: 'TT Fors Trial', sans-serif;
+}
+
+.no-discount {
   font-family: 'TT Fors Trial', sans-serif;
 }
 
@@ -3001,4 +3092,280 @@ footer {
   .columns {
     grid-template-columns: 1fr;
   }
+}
+
+.book-title {
+  width: 100%;
+  height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-title h1 {
+  font-family: 'Boska-Medium';
+  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 8rem;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: auto;
+  font-family: 'TT Fors Trial', sans-serif;
+}
+
+#bookingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.input-fullname,
+.select-roomtype,
+.input-phone,
+.input-email,
+.input-date,
+.select-time,
+.select-start-time,
+.input-people,
+.textarea-message {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #999;
+  border-radius: 2px;
+  outline: none;
+}
+
+.textarea-message {
+  resize: none;
+  height: 60px;
+}
+
+.char-counter {
+  font-size: 12px;
+  text-align: right;
+  color: #333;
+  margin-top: 4px;
+}
+
+.checkboxes {
+  display: flex;
+  gap: 20px;
+}
+
+.checkbox-date-1,
+.checkbox-date-2,
+.checkbox-date-3,
+.checkbox-custom {
+  margin-right: 8px;
+}
+
+.notice {
+  font-size: 13px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-submit {
+  background: black;
+  color: white;
+  padding: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-submit:hover {
+  background: #222;
+}
+
+.btn-open-calendar {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #999;
+  border-radius: 2px;
+  outline: none;
+  background: none;
+}
+
+#calendarModal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.4);
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+}
+
+#calendarModal.open {
+  display: flex;
+}
+
+.modal-content {
+  display: flex;
+  background: #fff;
+  padding: 30px;
+  gap: 40px;
+  border-radius: 10px;
+  width: 700px;
+  max-width: 90%;
+  box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.custom-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.calendar-day {
+  background: #f9f9f9;
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  background: #e6f5f0;
+}
+
+.calendar-day.selected {
+  background-color: #1f8f6b;
+  color: white;
+}
+
+.calendar-day.disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+}
+
+.green { background: #1f8f6b; }
+.yellow { background: #e6b800; }
+.red { background: #e63946; }
+
+.time-selector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.time-selector select {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.time-selector button {
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1f8f6b;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.time-selector button:hover {
+  background-color: #187456;
+}
+
+.calendar-day-name {
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 0;
+  color: #333;
+}
+
+.calendar-empty {
+  background: transparent;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.calendar-day-name, .calendar-day, .calendar-empty {
+  width: calc(100% / 7);
+  text-align: center;
+  padding: 8px 0;
+}
+#calendarModal > div {
+  min-width: 400px;
+}
+
+.calendar-day.selected {
+  width: 100%;
 }

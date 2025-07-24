@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumero | Galéria</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="boska.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: sans-serif;
+    }
+
+    .gallery {
+      padding: 3rem;
+    }
+
+    .gallery-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-bottom: 60px;
+      justify-items: center;
+    }
+
+    .gallery-item {
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+
+    .image-zoom {
+      transform: scale(1.1);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      transition: transform 0.8s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav style="margin-bottom: 5vh;">
+    <div class="logo"><a href="/">Lumero</a></div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+    </div>
+    <div class="links">
+      <a href="/about.html">About</a>
+      <div class="dropdown">
+        <button class="dropbtn">
+          Services <img class="menu-arrow" src="./assets/downarrow.svg" />
+        </button>
+        <div class="dropdown-content">
+          <a href="/roomrent.html">Terembérlés</a>
+          <a href="#">Catering</a>
+          <a href="#">Rendezvényszervezés</a>
+        </div>
+      </div>
+      <a>Booking</a>
+      <a href="">Gallery</a>
+      <a href="news.html">News</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/login.html">Account</a>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/about.html">About</a>
+      <a href="/roomrent.html">Terembérlés</a>
+      <a href="#">Catering</a>
+      <a href="#">Rendezvényszervezés</a>
+      <a>Booking</a>
+      <a href="">Gallery</a>
+      <a href="news.html">News</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/login.html">Account</a>
+    </div>
+  </nav>
+
+  <div class="gallery">
+    <div class="gallery-row">
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/1.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/3.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/2.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/4.png" alt="" /></div></div>
+    </div>
+    <div class="gallery-row">
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/5.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/6.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/7.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/8.png" alt="" /></div></div>
+    </div>
+    <div class="gallery-row">
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/9.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/10.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/11.png" alt="" /></div></div>
+      <div class="gallery-item"><div class="image-zoom"><img src="assets/12.png" alt="" /></div></div>
+    </div>
+  </div>
+  
+
+  <footer>
+    <div class="left-footer"><a>Lumero</a></div>
+    <div class="right-footer">
+      <div class="footer-col">
+        <p>Miskolc</p>
+        <p>Kazinzy Ferenc utca 24</p>
+        <p>3525</p>
+      </div>
+      <div class="footer-col">
+        <p>Contact</p>
+        <p>Hello@lumero.com</p>
+        <p>© 2025 lumero</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('open');
+    }
+  </script>
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+gsap.utils.toArray('.gallery-row').forEach(row => {
+  // Képek az adott sorban
+  const images = row.querySelectorAll('img');
+  
+  // Promise alapú betöltés ellenőrzés
+  function imagesLoaded(imgs) {
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const total = imgs.length;
+      
+      if(total === 0) resolve(); // Ha nincs kép, azonnal
+      
+      imgs.forEach(img => {
+        if (img.complete && img.naturalHeight !== 0) {
+          loadedCount++;
+          if(loadedCount === total) resolve();
+        } else {
+          img.addEventListener('load', () => {
+            loadedCount++;
+            if(loadedCount === total) resolve();
+          });
+          img.addEventListener('error', () => {
+            loadedCount++;
+            if(loadedCount === total) resolve();
+          });
+        }
+      });
+    });
+  }
+
+  imagesLoaded(images).then(() => {
+    // Indítsd el az animációt csak, ha görgetésre elérhető lesz
+    gsap.to(row.querySelectorAll('.gallery-item'), {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: row,
+        start: "top 66%",
+        toggleActions: "play none none none"
+      }
+    });
+
+    gsap.to(row.querySelectorAll('.image-zoom'), {
+      scale: 1,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: row,
+        start: "top 66%",
+        toggleActions: "play none none none"
+      }
+    });
+  });
+});
+
+  </script>
+</body>
+</html>

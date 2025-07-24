@@ -254,6 +254,19 @@
     .delete-btn {
       color: #c00;
     }
+
+    .older-notis {
+      padding-top: 20px;
+      box-sizing: border-box;
+    }
+
+    .noti-item {
+      border-top: #000 1px solid;
+      padding-top: 10px;
+    }
+    .noti-item:nth-last-child(1) {
+      border-bottom: #000 1px solid;
+    }
     </style>
 </head>
 
@@ -282,14 +295,36 @@
                     <div class="card-value" id="usersCount">0</div>
                 </div>
             </div>
+
+
         </div>
         <div class="orders">
         </div>
         <div class="admin-notifications">
-            <div class="header">
-                <h2 id="adminGreeting">SZIA, ADMIN!</h2>
-                <a class="logout" href="/logout">KIJELENTKEZÉS</a>
+          <div class="header">
+            <h2 id="adminGreeting">SZIA, ADMIN!</h2>
+            <a class="logout" href="/logout">KIJELENTKEZÉS</a>
+          </div>
+          <h1>Régebbi értesítések</h1>
+          <div class="older-notis" id="notificationsList">
+            
+            <!-- Itt lesznek a betöltött értesítések -->
+          </div>
+        
+          <button id="openModalBtn">Új értesítés</button>
+        </div>
+        
+        <!-- Modal -->
+        <div id="notificationModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center;">
+          <div style="background: white; padding: 20px; border-radius: 10px; width: 300px;">
+            <h3>Új értesítés</h3>
+            <input id="notiTitle" type="text" placeholder="Cím" style="width: 100%; margin-bottom: 10px;" />
+            <textarea id="notiDesc" placeholder="Leírás" style="width: 100%; height: 80px;"></textarea>
+            <div style="margin-top: 10px; text-align: right;">
+              <button onclick="closeModal()">Mégse</button>
+              <button onclick="sendNotification()">Küldés</button>
             </div>
+          </div>
         </div>
         <div class="admin-news">
             <div class="header">
@@ -325,7 +360,7 @@
                     </div>
                   </form>
                   
-                  
+                </div>
           </div>
     </div>
 

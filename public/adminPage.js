@@ -111,6 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const createdAtDate = res.createdAt ? res.createdAt.split('T')[0] : 'ismeretlen';
             const arrivalDate = res.date ? res.date.split('T')[0] : 'ismeretlen';
 
+
+
+            const extrasText = res.extras && typeof res.extras === 'object'
+                ? Object.entries(res.extras)
+                    .filter(([_, value]) => value === true)
+                    .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1)) // nagy kezdőbetű
+                    .join(', ') || 'nincs'
+                : 'nincs';
+
             // A rendelés kártya div-be betesszük az order ID-t adatként (data-id)
             const orderHTML = `
                 <div class="order-card" data-id="${res.id || res._id}">
@@ -119,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Email:</strong> ${res.email}</p>
                         <p><strong>Telefonszám:</strong> ${res.phone}</p>
                         <p><strong>Terem:</strong> ${res.roomName || 'ismeretlen'}</p>
-                        <p><strong>Extra szolgáltatás:</strong> ${res.extra || 'nincs'}</p>
+                        <p><strong>Extra szolgáltatás:</strong> ${extrasText}</p>
                         <p><strong>Ajánlatra vár:</strong> ${res.waiting ? 'igen' : 'nem'}</p>
                     </div>
                     <div class="order-right">
@@ -277,3 +286,96 @@ async function deleteNews(id) {
 
 // Első betöltés
 fetchNews();
+
+async function loadNotifications() {
+    try {
+        const res = await fetch('/api/notifications');
+        const data = await res.json();
+
+        const container = document.getElementById('notificationsList');
+        container.innerHTML = ''; // ürítjük először
+
+        if (!Array.isArray(data)) return;
+
+        data.forEach(noti => {
+            const div = document.createElement('div');
+            div.classList.add('noti-item');
+            div.style.marginBottom = '10px';
+            div.setAttribute('data-id', noti._id); // MongoDB ID beállítása
+          
+            div.innerHTML = `
+              <strong>${noti.title}</strong>
+              <small>${new Date(noti.createdAt).toLocaleString()}</small>
+              <img src="/assets/trash-icon.svg" alt="Törlés" class="delete-icon" style="cursor:pointer; width:24px;" />
+              <p>${noti.description}</p>
+              
+            `;
+          
+            const deleteIcon = div.querySelector('.delete-icon');
+          
+            deleteIcon.addEventListener('click', async () => {
+              const notiId = div.getAttribute('data-id');
+          
+              const confirmed = confirm('Biztosan törlöd ezt az értesítést?');
+          
+              if (!confirmed) return;
+          
+              try {
+                const res = await fetch(`/api/notifications/${notiId}`, { method: 'DELETE' });
+                if (res.ok) {
+                  div.remove(); // törlés a DOM-ból
+                } else {
+                  console.error('Nem sikerült törölni');
+                }
+              } catch (err) {
+                console.error('Hiba történt:', err);
+              }
+            });
+          
+            container.appendChild(div);
+          });
+    } catch (err) {
+        console.error('Nem sikerült betölteni az értesítéseket:', err);
+    }
+}
+
+// Modal nyitása/zárása
+function openModal() {
+    document.getElementById('notificationModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('notificationModal').style.display = 'none';
+    document.getElementById('notiTitle').value = '';
+    document.getElementById('notiDesc').value = '';
+}
+
+document.getElementById('openModalBtn').addEventListener('click', openModal);
+
+// Értesítés küldése
+async function sendNotification() {
+    const title = document.getElementById('notiTitle').value.trim();
+    const description = document.getElementById('notiDesc').value.trim();
+
+    if (!title || !description) {
+        alert('Kérlek, töltsd ki a cím és leírás mezőt!');
+        return;
+    }
+
+    const res = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description })
+    });
+
+    if (res.ok) {
+        closeModal();
+        await loadNotifications();
+        alert('Értesítés sikeresen elküldve!');
+    } else {
+        alert('Hiba történt az értesítés küldésekor.');
+    }
+}
+
+// Betöltés oldalra
+document.addEventListener('DOMContentLoaded', loadNotifications);

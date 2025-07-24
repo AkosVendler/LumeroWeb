@@ -76,7 +76,8 @@ app.post('/upload-news', upload.single('image'), async (req, res) => {
   }
 });
 
-app.get('/api/news', async (req, res) => {;
+app.get('/api/news', async (req, res) => {
+  ;
   client.connect();
   try {
     const latest = await db.collection('News').find().toArray();
@@ -90,7 +91,7 @@ app.get('/api/news', async (req, res) => {;
 app.get('/api/news/:id', async (req, res) => {
   client.connect();
   try {
-    const latest = await db.collection('News').findOne({ _id: new ObjectId(req.params.id)});
+    const latest = await db.collection('News').findOne({ _id: new ObjectId(req.params.id) });
     res.json(latest);
   } catch (err) {
     console.error(err);
@@ -120,11 +121,6 @@ app.put('/api/news/:id', upload.single('image'), async (req, res) => {
     // A form adatai
     const { title, leftText, rightText } = req.body;
     const image = req.file;
-
-    console.log('title:', title);
-    console.log('leftText:', leftText);
-    console.log('rightText:', rightText);
-    console.log('image:', image);
 
     if (!title || !leftText || !rightText) {
       return res.status(400).json({ success: false, message: 'Hiányzó mezők!' });
@@ -158,9 +154,8 @@ app.put('/api/news/:id', upload.single('image'), async (req, res) => {
 
 
 
-app.post('/login', async (req, res) => { 
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Kapott login adat:', { email, password: '***' }); // Jelszót ne írd ki, csak jelzésképp
   try {
     const user = await accountsCollection.findOne({
       $or: [{ email }, { fullname: email }]
@@ -171,20 +166,18 @@ app.post('/login', async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      console.log('Hibás jelszó:', email);
       return res.status(401).json({ error: 'Hibás jelszó.' });
     }
     const responseData = { message: 'Sikeres bejelentkezés', isAdmin: user.isAdmin || false };
-    console.log('Válasz küldése:', responseData);
     res
       .cookie('userId', user._id.toString(), {
         httpOnly: true,
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60, // 1 óra
+        maxAge: 1000 * 60 * 60,
       })
       .status(200)
       .json(responseData);
-    res.redirect('/useraccount');
+
   } catch (err) {
     console.error('Login hiba:', err);
     res.status(500).json({ error: 'Szerverhiba a bejelentkezés során.' });
@@ -200,7 +193,7 @@ app.get('/user/notifications', authMiddleware, async (req, res) => {
       .toArray();
 
     if (!notifications || notifications.length === 0) {
-      return res.status(404).json({ error: 'Nincs értesítés.' });
+      return res.status(200).json([]);
     }
 
     // Visszaadjuk a legutolsó értesítést (a legfrissebbet)
@@ -221,8 +214,9 @@ app.get('/user/discounts', authMiddleware, async (req, res) => {
     );
 
     if (!user || !user.discounts || user.discounts.length === 0) {
-      return res.status(404).json({ error: 'Nincs kedvezmény.' });
+      return res.status(200).json([]); // üres tömb
     }
+    
 
     // Csak az érvényes kedvezményeket adjuk vissza
     const validDiscounts = user.discounts.filter(d => d.isValid !== false);
@@ -242,11 +236,13 @@ app.get('/user/reservations', authMiddleware, async (req, res) => {
   try {
     const user = await db.collection('Accounts').findOne(
       { _id: new ObjectId(req.userId) },
-      { projection: { reservations: 1 } }
+      { projection: { reservations: 1, } }
     );
 
+
+
     if (!user || !user.reservations || user.reservations.length === 0) {
-      return res.status(404).json({ error: 'Nincsenek foglalások.' });
+      return res.status(200).json([]);
     }
 
     const reservationIds = user.reservations.map(id => new ObjectId(id));
@@ -254,6 +250,8 @@ app.get('/user/reservations', authMiddleware, async (req, res) => {
     const reservations = await db.collection('Reservation')
       .find({ _id: { $in: reservationIds } })
       .toArray();
+
+    console.log(reservations);
 
     // Szoba ID-k összegyűjtése
     const roomIds = reservations.map(r => new ObjectId(r.roomId));
@@ -336,7 +334,7 @@ app.post('/api/password-reset', async (req, res) => {
           path: './public/assets/white.png',
           cid: 'whitebg'
         }
-      ],      
+      ],
       html: `<!DOCTYPE html>
 <html lang="hu">
   <head>
@@ -539,6 +537,143 @@ app.post('/register', async (req, res) => {
   }
 });
 
+function calculateEndTime(startTime, duration) {
+  // Ha duration 'egész nap', akkor fixen 09:00-17:00
+  if (duration === 'Teljes nap' || duration === '8' || duration === 8) {
+    return "17:00";
+  }
+
+  // startTime formátuma: "HH:MM"
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+
+  // duration órában (szám)
+  const endHour = startHour + Number(duration);
+
+  // Vissza formázva "HH:MM"
+  // Ha elmegy 24 fölé, akkor egyszerűen nem fog előfordulni ebben az esetben, de ha kell, lehet bővíteni.
+  return `${endHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+}
+
+
+
+app.post('/api/reserv', async (req, res) => {
+
+  const cookies = req.cookies; // ha van cookie-parser
+  const userId = cookies?.userId;
+
+  if (!userId && !req.body.force) {
+    return res.status(200).json({
+      warning: true,
+      message: "Nem vagy bejelentkezve. Biztos, hogy így is foglalni szeretnél?",
+    });
+  }
+  let {
+    fullname,
+    roomtype,
+    phone,
+    email,
+    date,
+    startTime,
+    duration,
+    people,
+    message,
+    decoration,
+    catering,
+    organization,
+  } = req.body;
+
+  console.log(req.body);
+
+  // Kötelező mezők ellenőrzése
+  if (!fullname || !roomtype || !phone || !email || !date || !startTime || !duration || !people) {
+    return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
+  }
+
+  try {
+    let actualDuration = duration === 'Teljes nap' ? 8 : parseInt(duration);
+    let actualStartTime = startTime;
+    let endTime;
+
+    if (duration === 'Teljes nap') {
+      // Teljes nap esetén startTime 09:00, endTime 17:00
+      actualStartTime = '09:00';
+      endTime = '17:00';
+    } else {
+      // Más esetben kiszámoljuk az endTime-ot
+      endTime = calculateEndTime(startTime, actualDuration);
+    }
+
+    const newBooking = {
+      fullname,
+      userId,
+      roomtype,
+      phone,
+      email,
+      date,
+      startTime: actualStartTime,
+      originalStartTime: duration === 'Teljes nap' ? startTime : null, // Ha teljes nap, itt az eredeti kezdés
+      endTime,
+      duration: actualDuration,
+      people: parseInt(people),
+      message,
+      extras: {
+        decoration: !!decoration,
+        catering: !!catering,
+        organization: !!organization,
+      },
+      createdAt: new Date(),
+    };
+
+    const bookingResult = await db.collection('Reservation').insertOne(newBooking);
+
+    // Szoba frissítése - ha szükséges, itt is lehet, vagy külön endpointon
+
+    const room = await db.collection('Rooms').findOne({ name: roomtype });
+    if (!room) {
+      return res.status(404).json({ error: 'A kiválasztott szoba nem található.' });
+    }
+
+    const updatedDates = room.dates || {};
+
+    if (!updatedDates[date]) {
+      // Ha nincs ilyen dátum, inicializáljuk üres tömbbel
+      await db.collection('Rooms').updateOne(
+        { _id: room._id },
+        { $set: { [`dates.${date}`]: [] } }
+      );
+    }
+
+    // Az időintervallum hozzáadása az adott nap tömbjéhez
+    await db.collection('Rooms').updateOne(
+      { _id: room._id },
+      { $push: { [`dates.${date}`]: { startTime: actualStartTime, endTime } } }
+    );
+
+    if (userId) {
+      await db.collection("Accounts").updateOne(
+        { _id: new ObjectId(userId) },
+        {
+          $addToSet: {
+            reservations: bookingResult.insertedId.toString()
+          }
+        },
+        { upsert: true }
+      );
+    }
+
+
+
+
+    res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
+  } catch (err) {
+    console.error('Szerverhiba:', err);
+    res.status(500).json({ error: 'Szerverhiba' });
+  }
+});
+
+
+
+
 function authMiddleware(req, res, next) {
   const userId = req.cookies.userId;
 
@@ -549,7 +684,73 @@ function authMiddleware(req, res, next) {
   req.userId = userId;
   next();
 }
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const notifications = await db
+      .collection('Notifications')
+      .find({})
+      .sort({ createdAt: -1 }) // legújabb elöl
+      .toArray();
 
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error('Hiba a lekérésnél:', err);
+    res.status(500).json({ error: 'Szerverhiba' });
+  }
+});
+
+app.delete('/api/notifications/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const result = await db.collection("Notifications").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Nem található az értesítés' });
+    }
+    res.json({ message: 'Értesítés törölve' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Hiba történt a törlés közben' });
+  }
+});
+
+
+
+app.post('/api/notifications', async (req, res) => {
+  try {
+    const { title, description } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ error: 'A cím és leírás megadása kötelező.' });
+    }
+
+    // 🔍 Az összes user, akinek be van kapcsolva az értesítés
+    const activeUsers = await db.collection('Accounts')
+      .find({ isNotiAllowed: true })
+      .project({ _id: 1 }) // csak az _id-t kérjük
+      .toArray();
+
+    const userIds = activeUsers.map(user => user._id.toString()); // ha stringként tárolod
+
+    const notification = {
+      title,
+      description,
+      userId: userIds, // több userId
+      createdAt: new Date(),
+    };
+
+    const result = await db.collection('Notifications').insertOne(notification);
+
+    res.status(201).json({
+      message: 'Értesítés létrehozva',
+      id: result.insertedId,
+      affectedUsers: userIds.length
+    });
+  } catch (err) {
+    console.error('Hiba:', err);
+    res.status(500).json({ error: 'Szerverhiba' });
+  }
+});
 
 
 app.get('/user', authMiddleware, async (req, res) => {
@@ -585,6 +786,57 @@ app.get('/useraccount', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'useraccount.html'));
 });
 
+app.get('/api/bookings', (req, res) => {
+  const room = req.query.room;
+
+  db.collection('Rooms').findOne({ name: room }).then(doc => {
+    if (!doc) return res.status(404).json({ error: "Szoba nem található" });
+    res.json({ dates: doc.dates }); // <-- fontos: ne csak a `dates`-et küldd, hanem egy objektumban
+  });
+});
+
+
+async function getFreeTimes(dateStr) {
+  const allSlots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const bookings = await db.collection('Rooms').find({ date: dateStr }).toArray();
+
+    let bookedSlots = new Set();
+
+    bookings.forEach(b => {
+      const startIdx = allSlots.indexOf(b.startTime);
+      const endIdx = allSlots.indexOf(b.endTime);
+
+      if (startIdx === -1 || endIdx === -1) return;
+
+      for (let i = startIdx; i < endIdx; i++) {
+        bookedSlots.add(allSlots[i]);
+      }
+    });
+
+    const freeSlots = allSlots.filter(t => !bookedSlots.has(t));
+
+    return freeSlots;
+  } finally {
+    await client.close();
+  }
+}
+
+app.get('/api/free-times/:date', async (req, res) => {
+  const dateStr = req.params.date;
+
+  try {
+    const freeSlots = await getFreeTimes(dateStr);
+    res.json({ freeSlots });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 app.get('/admin/data', async (req, res) => {
   const { userId } = req.cookies;
   if (!userId) return res.status(401).json({ error: 'Nincs bejelentkezve' });
@@ -596,7 +848,6 @@ app.get('/admin/data', async (req, res) => {
   const users = await db.collection('Accounts').countDocuments();
 
   const reservations = await db.collection('Reservation').aggregate([
-    // 1. alakítsuk ObjectId-dá a userId-t és a roomId-t
     {
       $addFields: {
         userObjectId: {
@@ -605,17 +856,9 @@ app.get('/admin/data', async (req, res) => {
             then: { $toObjectId: '$userId' },
             else: '$userId'
           }
-        },
-        roomObjectId: {
-          $cond: {
-            if: { $eq: [{ $type: '$roomId' }, 'string'] },
-            then: { $toObjectId: '$roomId' },
-            else: '$roomId'
-          }
         }
       }
     },
-    // 2. kapcsoljuk az Accounts-ot
     {
       $lookup: {
         from: 'Accounts',
@@ -627,19 +870,6 @@ app.get('/admin/data', async (req, res) => {
     {
       $unwind: { path: '$userInfo', preserveNullAndEmptyArrays: true }
     },
-    // 3. kapcsoljuk a Rooms-ot
-    {
-      $lookup: {
-        from: 'Rooms',
-        localField: 'roomObjectId',
-        foreignField: '_id',
-        as: 'roomInfo'
-      }
-    },
-    {
-      $unwind: { path: '$roomInfo', preserveNullAndEmptyArrays: true }
-    },
-    // 4. végső projekció
     {
       $project: {
         date: 1,
@@ -650,20 +880,17 @@ app.get('/admin/data', async (req, res) => {
         extras: 1,
         createdAt: 1,
         phone: 1,
-        // vendéginfók fallback-ként
         name: {
           $ifNull: ['$userInfo.fullname', '$guest.name']
         },
         email: {
           $ifNull: ['$userInfo.email', '$guest.email']
         },
-        roomName: {
-          $ifNull: ['$roomInfo.name', 'ismeretlen']
-        }
+        roomName: '$roomtype' // ← itt simán a roomtype mezőt használjuk
       }
     }
   ]).toArray();
-  
+
 
   res.json({ orders, users, adminName: user.fullname, reservations });
 });
@@ -678,12 +905,12 @@ app.get('/logout', (req, res) => {
 app.delete('/admin/deleteOrder/:id', async (req, res) => {
   const orderId = req.params.id;
   try {
-      // Feltételezve, hogy egy adatbázisban tárolod, pl. MongoDB
-      await db.collection('Reservation').deleteOne({ _id: new ObjectId(orderId) });
-      res.status(200).send({ message: 'Törlés sikeres' });
+    // Feltételezve, hogy egy adatbázisban tárolod, pl. MongoDB
+    await db.collection('Reservation').deleteOne({ _id: new ObjectId(orderId) });
+    res.status(200).send({ message: 'Törlés sikeres' });
   } catch (err) {
-      console.error(err);
-      res.status(500).send({ message: 'Törlés sikertelen' });
+    console.error(err);
+    res.status(500).send({ message: 'Törlés sikertelen' });
   }
 });
 
