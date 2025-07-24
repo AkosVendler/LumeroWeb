@@ -13,7 +13,7 @@ fetch('/admin/data')
 
         adminNameValue = data.adminName; // ELTÁROLJUK
 
-        const greetingEl = document.getElementById('adminGreeting');
+        const greetingEl = document.querySelector('.admin-notifications .adminGreeting');
         if (greetingEl) {
             greetingEl.textContent = `SZIA, ${adminNameValue.toUpperCase()}!`;
         }
@@ -58,7 +58,7 @@ notiLink.addEventListener('click', (e) => {
     notiContent.style.display = 'block';
 
     // Ez a sor csak akkor működik, ha a DOM már tartalmazza a greeting elemet
-    const greetingEl = document.querySelector('.admin-notifications #adminGreeting');
+    const greetingEl = document.querySelector('.admin-notifications .adminGreeting');
     if (greetingEl) {
         greetingEl.textContent = `SZIA, ${adminNameValue.toUpperCase()}!`;
     } else {
@@ -74,7 +74,7 @@ newsLink.addEventListener('click', (e) => {
     newsContent.style.display = 'block';
 
     // Ez a sor csak akkor működik, ha a DOM már tartalmazza a greeting elemet
-    const greetingEl = document.querySelector('.admin-news #adminGreeting');
+    const greetingEl = document.querySelector('.admin-news .adminGreeting');
     if (greetingEl) {
         greetingEl.textContent = `SZIA, ${adminNameValue.toUpperCase()}!`;
     } else {
@@ -194,6 +194,8 @@ function closeModal() {
     editingId = null;
 }
 
+
+
 function editNews(id) {
     const item = currentNewsList.find(n => n._id === id);
     if (!item) return alert('Nem található a hír.');
@@ -204,7 +206,7 @@ function editNews(id) {
     document.getElementById('leftInput').value = item.leftText;
     document.getElementById('rightInput').value = item.rightText;
 
-    openModal();
+    openNewsModal();
 }
 
 document.getElementById('newsForm').addEventListener('submit', async (e) => {
@@ -222,7 +224,7 @@ document.getElementById('newsForm').addEventListener('submit', async (e) => {
     const formData = new FormData(form);
 
     const method = editingId ? 'PUT' : 'POST';
-    const url = editingId ? `/api/news/${editingId}` : '/api/news';
+    const url = editingId ? `/api/news/${editingId}` : '/upload-news';
 
     const res = await fetch(url, {
         method,
@@ -232,7 +234,7 @@ document.getElementById('newsForm').addEventListener('submit', async (e) => {
     const result = await res.json();
 
     if (result.success) {
-        closeModal();
+        closeNewsModal();
         fetchNews();
         alert(editingId ? 'Sikeres módosítás!' : 'Sikeres feltöltés!');
     } else {
@@ -379,3 +381,15 @@ async function sendNotification() {
 
 // Betöltés oldalra
 document.addEventListener('DOMContentLoaded', loadNotifications);
+
+
+function openNewsModal() {
+    document.getElementById('newsModal').style.display = 'block';
+}
+
+function closeNewsModal() {
+    document.getElementById('newsModal').style.display = 'none';
+    document.getElementById('newsForm').reset();
+    editingId = null;
+}
+

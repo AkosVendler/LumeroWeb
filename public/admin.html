@@ -281,7 +281,7 @@
 
         <div class="main">
             <div class="header">
-                <h2 id="adminGreeting">SZIA, ADMIN!</h2>
+                <h2 class="adminGreeting">SZIA, ADMIN!</h2>
                 <a class="logout" href="/logout">KIJELENTKEZÉS</a>
             </div>
 
@@ -302,7 +302,7 @@
         </div>
         <div class="admin-notifications">
           <div class="header">
-            <h2 id="adminGreeting">SZIA, ADMIN!</h2>
+            <h2 class="adminGreeting">SZIA, ADMIN!</h2>
             <a class="logout" href="/logout">KIJELENTKEZÉS</a>
           </div>
           <h1>Régebbi értesítések</h1>
@@ -328,10 +328,10 @@
         </div>
         <div class="admin-news">
             <div class="header">
-              <h2 id="adminGreeting">SZIA, ADMIN!</h2>
+              <h2 class="adminGreeting">SZIA, ADMIN!</h2>
               <a class="logout" href="/logout">KIJELENTKEZÉS</a>
             </div>
-            <button id="createNews" class="createNews">Hír írása</button>
+            <button id="createNews" onclick="openNewsModal()" class="createNews">Hír írása</button>
             <div class="news-rows" id="newsRows"></div>
           </div>
         
@@ -356,7 +356,35 @@
                   
                     <div class="buttons">
                       <button type="submit" class="uploadBtn">Cikk feltöltése</button>
-                      <button type="button" class="cancelBtn" onclick="closeModal()">Cikk elvetése</button>
+                      <button type="button" class="cancelBtn" onclick="closeNewsModal()">Cikk elvetése</button>
+                    </div>
+                  </form>
+                  
+                </div>
+          </div>
+    </div>
+<!-- Modal -->
+          <div class="modal" id="newsModal">
+            <div class="modal-content">
+                <form id="newsForm" enctype="multipart/form-data">
+                    <input type="text" id="titleInput" name="title" placeholder="Cím" required />
+                    
+                    <div class="form-group image-upload" onclick="document.getElementById('fileInput').click();">
+                      <input type="file" id="fileInput" name="image" hidden />
+                      <div style="text-align: center;">
+                        <p style="font-size: 2rem;">🖱️</p>
+                        <p>Kép feltöltése</p>
+                      </div>
+                    </div>
+                  
+                    <div class="columns">
+                      <textarea id="leftInput" name="leftText" placeholder="Szöveg bal oszlop" required></textarea>
+                      <textarea id="rightInput" name="rightText" placeholder="Szöveg jobb oszlop" required></textarea>
+                    </div>
+                  
+                    <div class="buttons">
+                      <button type="submit" class="uploadBtn">Cikk feltöltése</button>
+                      <button type="button" class="cancelBtn" onclick="closeNewsModal()">Cikk elvetése</button>
                     </div>
                   </form>
                   
