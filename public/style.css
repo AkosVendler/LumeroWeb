@@ -864,6 +864,23 @@ footer {
   }
 }
 
+@media (max-width: 450px) {
+  .line {
+    margin: 50px 0px;
+  }
+  .about {
+    margin-top: 200px;
+  }
+
+  .desc-title {
+    text-align: center;
+  }
+
+  .right-wrapper {
+    width: 70%;
+  }
+}
+
 @media (max-width: 375px) {
   .desc-title {
     font-size: 16px;
@@ -3480,4 +3497,60 @@ label {
 
 .calendar-day.selected {
   width: 100%;
+}
+
+@media (max-width: 900px) {
+  .form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bookingForm {
+    max-width: 80%;
+  }
+  .row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .field {
+    width: 100%;
+  }
+
+  .checkboxes {
+    flex-direction: row;
+  } 
+
+  .column input[type="password"], input[type="checkbox"]  {
+    margin-bottom: 3px;
+  }
+
+  .book-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+  }
+
+  .book-title h1 {
+    text-align: center;
+    font-size: 5rem;
+  }
+  .form-container {
+    margin: 0 40px;
+  }
+
+  .modal-content {
+    flex-direction: column;
+    padding: 20px 40px;
+    box-sizing: border-box;
+  }
+  #calendarModal > div {
+    min-width: 320px;
+    max-width: 100%;
+    min-height: 80%;
+  }
 }
