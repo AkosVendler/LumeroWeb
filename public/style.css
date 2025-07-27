@@ -1844,7 +1844,7 @@ footer {
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
   .contact-wrapper {
     padding: 40px 20px;
     box-sizing: border-box;
