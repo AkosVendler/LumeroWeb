@@ -2875,6 +2875,56 @@ footer {
   margin: 0;
 }
 
+@media (max-width: 900px) {
+
+  .login-hero h1 {
+    font-size: 5rem;
+    font-weight: normal;
+    font-family: 'Boska-Medium';
+    text-transform: uppercase;
+  }
+
+  .login-form {
+    width: 60%;
+  }
+}
+
+@media (max-width: 650px) {
+  .login-hero h1 {
+    font-size: 4rem;
+    font-weight: normal;
+    font-family: 'Boska-Medium';
+    text-transform: uppercase;
+  }
+
+  .login-form button {
+    width: 60%;
+  }
+
+}
+
+@media (max-width: 450px) {
+  .login-hero h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    font-family: 'Boska-Medium';
+    text-transform: uppercase;
+  }
+
+}
+
+@media (max-width: 320px) {
+  .login-hero h1 {
+    font-size: 2rem;
+    font-weight: normal;
+    font-family: 'Boska-Medium';
+    text-transform: uppercase;
+  }
+  .login-form {
+    width: 80%;
+  }
+}
+
 #star {
   color: #C32727;
 }
@@ -2987,6 +3037,70 @@ footer {
   gap: 60px;
   max-width: 800px;
 }
+
+@media (max-width: 900px) {
+  .account-nav {
+    width: 25%;
+  }
+  .container {
+    flex-direction: column;
+  }
+}
+@media (max-width: 720px) {
+
+  .discount {
+    align-items: center;
+  }
+
+  .account-content {
+    width: 80%;
+  }
+
+  #discount-description {
+    width: 100%;
+  }
+
+  #discount-header {
+    font-size: 20px;
+    margin: 0 5px;
+  }
+}
+
+@media (max-width: 650px) {
+  .account-nav {
+    display: none;
+  }
+  .account-title {
+    font-size: 32px;
+  }
+  .account-content {
+    width: 100%;
+  }
+}
+
+@media (max-width: 375px) {
+  .hello {
+    padding: 0 40px;
+  }
+  .discount {
+    gap: 10px;
+  }
+
+  #discount-header {
+    font-size: 16px;
+  }
+  #discount-description {
+    font-size: 14px;
+  }
+  .discount-image {
+    height: 180px;
+  }
+
+  .discount-image p {
+    font-size: 24px;
+  }
+}
+
 .column {
   flex: 1;
 }
@@ -3075,6 +3189,28 @@ footer {
   margin-top: 30px;
 }
 
+@media (max-width: 900px) {
+  .reset-container h1 {
+    font-family: 'Boska-Bold';
+    font-weight: normal;
+    font-size: 64px;
+    text-align: center;
+  }
+
+  .reset-container p {
+    text-align: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .reset-container h1 {
+    font-size: 40px;
+  }
+  .reset-email {
+    width: 70%;
+  }
+}
+
 .reset-password-input {
   border: #000 1px solid;
   width: 300px;
@@ -3087,6 +3223,15 @@ footer {
   flex-direction: column;
   font-family: 'TT Fors Trial', sans-serif;
   margin-top: 10px;
+}
+
+@media (max-width: 375px) {
+  .password-div {
+    width: 80%;
+  }
+  .reset-password-input {
+    width: 100%;
+  }
 }
 
 .news-row-wrapper {
