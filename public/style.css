@@ -1854,7 +1854,7 @@ footer {
     flex-direction: column-reverse;
     align-items: center;
     justify-content: space-between;
-    gap: 2vh;
+    gap: 5vh;
   }
   .contact-header {
     display: flex;
@@ -1873,7 +1873,7 @@ footer {
   }
   .contact-left-wrapper {
     width: 100%;
-    height: 90vh;
+    height: 40vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
