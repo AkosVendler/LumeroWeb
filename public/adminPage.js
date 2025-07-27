@@ -97,6 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/admin/data');
         const data = await response.json();
 
+        console.log(data);
+
         const ordersContainer = document.querySelector('.orders');
         ordersContainer.innerHTML = `
     <div class="header">
