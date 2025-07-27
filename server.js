@@ -881,12 +881,20 @@ app.get('/admin/data', async (req, res) => {
         createdAt: 1,
         phone: 1,
         name: {
-          $ifNull: ['$userInfo.fullname', '$guest.name']
+          $ifNull: [
+            '$userInfo.fullname', 
+            '$fullname',      // itt a root mezőből
+            '$guest.name'    // ha van guest mező, lehet még használni
+          ]
         },
         email: {
-          $ifNull: ['$userInfo.email', '$guest.email']
+          $ifNull: [
+            '$userInfo.email', 
+            '$email',        // itt a root mezőből
+            '$guest.email'   // ha van guest mező
+          ]
         },
-        roomName: '$roomtype' // ← itt simán a roomtype mezőt használjuk
+        roomName: '$roomtype'
       }
     }
   ]).toArray();
