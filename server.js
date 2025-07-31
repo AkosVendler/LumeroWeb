@@ -404,7 +404,7 @@ app.post('/api/password-reset', async (req, res) => {
       </p>
 
       <!-- Gomb -->
-      <a href="http://localhost:3000/reset?token=${resetToken}" 
+      <a href="${process.env.DOMAIN}reset?token=${resetToken}" 
          style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
         Jelszó visszaállítása
       </a>
@@ -779,6 +779,64 @@ app.post('/api/reserv', async (req, res) => {
     });
 
 
+    const transporter2boss = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'vendler.akos@gmail.com',
+        pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
+      }
+    });
+
+    // Email opciók
+    const mailOptions2boss = {
+      from: 'vendler.akos@gmail.com',
+      to: 'vendler.akos„gmail.com',
+      subject: 'LUMERO | Fogalás érkezett🎉',
+      attachments: [
+        {
+          filename: 'LUMERO.png',
+          path: './public/assets/LUMERO.png',
+          cid: 'logo123'
+        }
+      ],
+      html: `<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Foglalás érkezett</title>
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+  </head>
+  <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
+
+    <div class="email-container" style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+
+      <!-- Logo fix fehér hátterű kép, NE filterezd -->
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto; border:0; filter:none;" class="no-invert" />
+
+      <!-- Cím -->
+      <h2 style="font-size:16px; font-weight:500; margin-top:50px; margin-bottom:30px; text-transform:uppercase; color:#000;">
+        Új Foglalás érkezett!
+      </h2>
+
+      <a href="${process.env.DOMAIN}admin" 
+         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
+         Ide kattintva látod a részleteket
+      </a>
+    </div>
+  </body>
+</html>
+`
+    };
+
+    // Email küldés
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.error('Hiba az email küldésekor:', error);
+      }
+      console.log('Email elküldve:', info.response);
+    });
+
     res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
 
 
@@ -1041,101 +1099,8 @@ app.delete('/admin/deleteOrder/:id', async (req, res) => {
 });
 
 
-// ❗️Webhook előtt NEM szabad json() middleware-t használni!
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const endpointSecret = 'whsec_...'; // Itt add meg a saját titkos kulcsodat
-  const sig = req.headers['stripe-signature'];
 
-  let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.error('Webhook hiba:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const buyerEmail = session.customer_details?.email || 'ismeretlen';
-
-    // ✅ Nodemailer konfigurálása
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'vendler.akos@gmail.com',
-        pass: 'oflu sakh ujjc bape' // csak App Password, vagy használd .env fájlban!
-      }
-    });
-
-    // ✅ Email a vevőnek
-    const buyerMailOptions = {
-      from: 'vendler.akos@gmail.com',
-      to: buyerEmail,
-      subject: 'Köszönjük a vásárlást!',
-      text: 'Sikeres fizetés! Köszönjük, hogy nálunk vásároltál.'
-    };
-
-    // ✅ Email az eladónak
-    const companyMailOptions = {
-      from: 'vendler.akos@gmail.com',
-      to: 'vendler.akos@gmail.com',
-      subject: 'Új vásárlás',
-      text: `Új rendelés érkezett: ${buyerEmail} fizetett $5.`
-    };
-
-    // ✅ Emailek küldése
-    transporter.sendMail(buyerMailOptions, (err, info) => {
-      if (err) {
-        console.error('Vevő email hiba:', err);
-      } else {
-        
-      }
-    });
-
-    transporter.sendMail(companyMailOptions, (err, info) => {
-      if (err) {
-        console.error('Cég email hiba:', err);
-      } else {
-        
-      }
-    });
-  }
-
-  res.status(200).end();
-});
-
-// ✅ Webhook UTÁN jöhet a JSON parser
-app.use(express.json());
-
-// ✅ Stripe checkout session létrehozása
-app.post('/create-checkout-session', async (req, res) => {
-  try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Demo termék',
-            },
-            unit_amount: 500,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: 'http://localhost:3000/success.html',
-      cancel_url: 'http://localhost:3000/cancel.html',
-    });
-
-    res.json({ id: session.id });
-  } catch (err) {
-    console.error('Hiba a checkout session létrehozásakor:', err);
-    res.status(500).json({ error: 'Valami hiba történt a fizetés indításakor.' });
-  }
-});
 
 
 
