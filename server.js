@@ -362,13 +362,13 @@ app.post('/api/password-reset', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'vendler.akos@gmail.com',
+        user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS
       }
     });
 
     const mailOptions = {
-      from: 'vendler.akos@gmail.com',
+      from: process.env.GMAIL_USER,
       to: email,
       subject: 'Jelszó visszaállítás',
       attachments: [
@@ -703,14 +703,14 @@ app.post('/api/reserv', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'vendler.akos@gmail.com',
+        user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
       }
     });
 
     // Email opciók
     const mailOptions = {
-      from: 'vendler.akos@gmail.com',
+      from: process.env.GMAIL_USER,
       to: newBooking.email,
       subject: 'LUMERO | Sikeres Foglalás🎉',
       attachments: [
@@ -782,15 +782,15 @@ app.post('/api/reserv', async (req, res) => {
     const transporter2boss = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'vendler.akos@gmail.com',
+        user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
       }
     });
 
     // Email opciók
     const mailOptions2boss = {
-      from: 'vendler.akos@gmail.com',
-      to: 'vendler.akos„gmail.com',
+      from: process.env.GMAIL_USER,
+      to: process.env.GMAIL_USER,
       subject: 'LUMERO | Fogalás érkezett🎉',
       attachments: [
         {
@@ -830,7 +830,7 @@ app.post('/api/reserv', async (req, res) => {
     };
 
     // Email küldés
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter2boss.sendMail(mailOptions2boss, (error, info) => {
       if (error) {
         return console.error('Hiba az email küldésekor:', error);
       }
