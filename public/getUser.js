@@ -2,7 +2,6 @@ fetch('/user', {
   credentials: 'include'
 })
   .then(res => {
-    console.log('Status:', res.status); // 🔍 Ellenőrizd itt
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();
   })

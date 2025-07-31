@@ -4,6 +4,20 @@ document.getElementById("button").addEventListener("click", (e) => {
     login(); // 🔥 ez eddig hiányzott
 });
 
+// Például a login oldal betöltésekor:
+fetch('/autologin', { credentials: 'include' })
+  .then(res => {
+    if (res.ok) return;
+    throw new Error('Nem bejelentkezett');
+  })
+  .then(data => {
+    // Átirányítás a fiókoldalra
+    window.location.href = '/useraccount.html'; // vagy ahova szeretnéd
+  })
+  .catch(err => {
+   
+    // Itt marad a login oldalon
+  });
 
 
 async function login() {

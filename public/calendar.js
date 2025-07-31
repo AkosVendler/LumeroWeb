@@ -17,9 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadData() {
         const selectedRoom = roomTypeSelect.value;
-        console.log(selectedRoom);
+        
         if (!selectedRoom) {
-            console.log("Nincs kiválasztva szoba, nem töltjük be a foglalásokat.");
             return;
         }
 
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     openBtn.addEventListener('click', () => {
-        console.log("Kattintás, roomTypeSelect.value:", roomTypeSelect.value);
         if (!roomTypeSelect.value) {
             alert("Kérlek, először válassz szobát.");
             return;
@@ -225,12 +223,13 @@ form.addEventListener("submit", async (e) => {
 
             if (!res2.ok) throw new Error(result2.error || "Ismeretlen hiba");
 
-            alert("Foglalás sikeres!");
+            window.location.href = "/succes.html";
             return;
         }
 
         if (!res.ok) throw new Error(result.error || "Ismeretlen hiba");
-        alert("Foglalás sikeres!");
+        window.location.href = "/succes.html";
+
     } catch (err) {
         alert("Hiba történt: " + err.message);
         console.error(err);

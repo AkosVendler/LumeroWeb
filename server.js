@@ -14,7 +14,7 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const { log } = require('console');
-
+const cron = require('node-cron');
 
 // ✅ CORS & static
 app.use(cors());
@@ -53,6 +53,32 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
+async function deleteOldResetTokens() {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const db = client.db('Lumero');
+    const collection = db.collection('ResetTokens');
+
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
+    const result = await collection.deleteMany({ createdAt: { $lt: threeDaysAgo } });
+
+    console.log(`[${new Date().toISOString()}] Törölt resetTokensek száma: ${result.deletedCount}`);
+  } catch (err) {
+    console.error('Hiba történt a resetTokensek törlésekor:', err);
+  } finally {
+    await client.close();
+  }
+}
+
+// Cron beállítás: 3 naponta egyszer, éjfélkor (0 0 */3 * *)
+cron.schedule('0 0 */3 * *', () => {
+  console.log('ResetTokensek törlése cron indul...');
+  deleteOldResetTokens();
+});
 
 // Route: POST /upload-news
 app.post('/upload-news', upload.single('image'), async (req, res) => {
@@ -161,7 +187,6 @@ app.post('/login', async (req, res) => {
       $or: [{ email }, { fullname: email }]
     });
     if (!user) {
-      console.log('Nincs ilyen felhasználó:', email);
       return res.status(401).json({ error: 'Nincs ilyen felhasználó.' });
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -183,6 +208,30 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Szerverhiba a bejelentkezés során.' });
   }
 });
+
+app.get('/autologin', authMiddleware, async (req, res) => {
+  try {
+    const user = await accountsCollection.findOne(
+      { _id: new ObjectId(req.userId) },
+      { projection: { fullname: 1, email: 1, isAdmin: 1 } }
+    );
+
+    if (!user) {
+      return res.status(401).json({ error: 'Érvénytelen felhasználó.' });
+    }
+
+    res.status(200).json({
+      message: 'Automatikus bejelentkezés sikeres',
+      fullname: user.fullname,
+      email: user.email,
+      isAdmin: user.isAdmin || false
+    });
+  } catch (err) {
+    console.error('Auto-login hiba:', err);
+    res.status(500).json({ error: 'Szerverhiba' });
+  }
+});
+
 
 app.get('/user/notifications', authMiddleware, async (req, res) => {
   try {
@@ -216,7 +265,7 @@ app.get('/user/discounts', authMiddleware, async (req, res) => {
     if (!user || !user.discounts || user.discounts.length === 0) {
       return res.status(200).json([]); // üres tömb
     }
-    
+
 
     // Csak az érvényes kedvezményeket adjuk vissza
     const validDiscounts = user.discounts.filter(d => d.isValid !== false);
@@ -251,11 +300,9 @@ app.get('/user/reservations', authMiddleware, async (req, res) => {
       .find({ _id: { $in: reservationIds } })
       .toArray();
 
-    console.log(reservations);
 
     // Szoba ID-k összegyűjtése
     const roomIds = reservations.map(r => new ObjectId(r.roomId));
-
 
     const rooms = await db.collection('Rooms')
       .find({ _id: { $in: roomIds } })
@@ -267,7 +314,7 @@ app.get('/user/reservations', authMiddleware, async (req, res) => {
     });
 
     const formatted = reservations.map(r => ({
-      room: roomMap[r.roomId] || 'Ismeretlen terem',
+      room: roomMap[r.roomId?.toString()] || r.roomtype || "Ismeretlen szoba",
       date: r.date,
       startTime: r.startTime,
       duration: r.duration,
@@ -275,6 +322,7 @@ app.get('/user/reservations', authMiddleware, async (req, res) => {
     }));
 
     res.json(formatted);
+
   } catch (err) {
     console.error('Foglalások lekérése sikertelen:', err);
     res.status(500).json({ error: 'Szerverhiba' });
@@ -328,11 +376,6 @@ app.post('/api/password-reset', async (req, res) => {
           filename: 'LUMERO.png',
           path: './public/assets/LUMERO.png',
           cid: 'logo123'
-        },
-        {
-          filename: 'white.png',
-          path: './public/assets/white.png',
-          cid: 'whitebg'
         }
       ],
       html: `<!DOCTYPE html>
@@ -373,8 +416,7 @@ app.post('/api/password-reset', async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    res.json({ message: 'Visszaállító e-mail elküldve!' });
-    console.log('Visszaállító e-mail elküldve!');
+    res.json({ message: 'Visszaállító e-mail elküldve!' });;
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Nem sikerült e-mailt küldeni.' });
@@ -384,7 +426,6 @@ app.post('/api/password-reset', async (req, res) => {
 
 app.get('/reset', async (req, res) => {
   const token = req.query.token;
-  console.log(token);
 
   resetTokensCollection = db.collection('ResetTokens');
   if (!token) {
@@ -409,7 +450,6 @@ app.get('/reset', async (req, res) => {
 app.post('/change-password', authMiddleware, async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
-  console.log(oldPassword, newPassword);
 
   try {
     const user = await db.collection('Accounts').findOne({ _id: new ObjectId(req.userId) });
@@ -420,7 +460,6 @@ app.post('/change-password', authMiddleware, async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: 'Hibás régi jelszó.' });
 
     const hashedNew = await bcrypt.hash(newPassword, 10);
-    console.log(user._id);
     await db.collection('Accounts').updateOne(
       { _id: user._id },
       { $set: { password: hashedNew } }
@@ -582,7 +621,6 @@ app.post('/api/reserv', async (req, res) => {
     organization,
   } = req.body;
 
-  console.log(req.body);
 
   // Kötelező mezők ellenőrzése
   if (!fullname || !roomtype || !phone || !email || !date || !startTime || !duration || !people) {
@@ -661,10 +699,90 @@ app.post('/api/reserv', async (req, res) => {
       );
     }
 
+    // Létrehozunk egy transporter-t (pl. Gmail használatával)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'vendler.akos@gmail.com',
+        pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
+      }
+    });
 
+    // Email opciók
+    const mailOptions = {
+      from: 'vendler.akos@gmail.com',
+      to: newBooking.email,
+      subject: 'LUMERO | Sikeres Foglalás🎉',
+      attachments: [
+        {
+          filename: 'LUMERO.png',
+          path: './public/assets/LUMERO.png',
+          cid: 'logo123'
+        }
+      ],
+      html: `<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sikeres Foglalás</title>
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+  </head>
+  <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
+
+    <div class="email-container" style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+
+      <!-- Logo fix fehér hátterű kép, NE filterezd -->
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto; border:0; filter:none;" class="no-invert" />
+
+      <!-- Cím -->
+      <h2 style="font-size:16px; font-weight:500; margin-top:50px; margin-bottom:30px; text-transform:uppercase; color:#000;">
+        Sikeres foglalás!
+      </h2>
+
+      <!-- Leírás -->
+      <p style="font-size:15px; color:#333; margin-bottom:40px;">
+        Köszönjük foglalásodat, a foglalásod részleteit bármikor megtudod tekinteni a fiókodban
+      </p>
+
+      <p style="font-size:15px; color:#333; margin-bottom:40px;">
+        Foglalásod azonostítója
+      </p>
+      <div  
+         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
+        ${bookingResult.insertedId}
+      </div>
+
+      <p style="font-size:15px; color:#333; margin-bottom:40px;">
+        Foglalásod időpontja
+      </p>
+      <div  
+         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
+        ${newBooking.date + " " + newBooking.startTime + " " + newBooking.endTime}
+      </div>
+
+      <p style="font-size:15px; color:#333; margin-bottom:40px;">
+        A következő emailben csatolt díjbekérő dokumentumban található számlaszámra kell utalni a fizetendő összeget
+      </p>
+    </div>
+  </body>
+</html>
+`
+    };
+
+    // Email küldés
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.error('Hiba az email küldésekor:', error);
+      }
+      console.log('Email elküldve:', info.response);
+    });
 
 
     res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
+
+
+
   } catch (err) {
     console.error('Szerverhiba:', err);
     res.status(500).json({ error: 'Szerverhiba' });
@@ -882,14 +1000,14 @@ app.get('/admin/data', async (req, res) => {
         phone: 1,
         name: {
           $ifNull: [
-            '$userInfo.fullname', 
+            '$userInfo.fullname',
             '$fullname',      // itt a root mezőből
             '$guest.name'    // ha van guest mező, lehet még használni
           ]
         },
         email: {
           $ifNull: [
-            '$userInfo.email', 
+            '$userInfo.email',
             '$email',        // itt a root mezőből
             '$guest.email'   // ha van guest mező
           ]
@@ -971,7 +1089,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
       if (err) {
         console.error('Vevő email hiba:', err);
       } else {
-        console.log('Vevő email elküldve:', info.response);
+        
       }
     });
 
@@ -979,7 +1097,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
       if (err) {
         console.error('Cég email hiba:', err);
       } else {
-        console.log('Cég email elküldve:', info.response);
+        
       }
     });
   }
