@@ -30,14 +30,22 @@ let accountsCollection;
 async function connectDB() {
   try {
     await client.connect();
-    db = client.db('Lumero');
-    accountsCollection = db.collection('Accounts');
-    console.log('✅ Sikeres csatlakozás a MongoDB-hez.');
+    db = client.db("Lumero");
+    accountsCollection = db.collection("Accounts");
+    console.log("✅ Sikeres csatlakozás a MongoDB-hez.");
+
+    // 🔑 Index létrehozása csak most, amikor már van db
+    await db.collection("Reservation").createIndex(
+      { roomtype: 1, date: 1, startTime: 1, endTime: 1 },
+      { unique: true }
+    );
+    console.log("✅ Index létrehozva a Reservation kollekcióban.");
   } catch (err) {
-    console.error('❌ MongoDB kapcsolódási hiba:', err);
+    console.error("❌ MongoDB kapcsolódási hiba:", err);
   }
 }
-// Hívjuk meg a connectDB függvényt
+
+// Hívjuk meg a connectDB-t szerver induláskor
 connectDB().catch(console.error);
 
 // File upload config
@@ -595,6 +603,9 @@ function calculateEndTime(startTime, duration) {
 
 
 
+// Unique index létrehozása (szerver induláskor fusson le egyszer)
+
+
 app.post('/api/reserv', async (req, res) => {
 
   const cookies = req.cookies; // ha van cookie-parser
@@ -606,6 +617,7 @@ app.post('/api/reserv', async (req, res) => {
       message: "Nem vagy bejelentkezve. Biztos, hogy így is foglalni szeretnél?",
     });
   }
+
   let {
     fullname,
     roomtype,
@@ -621,7 +633,6 @@ app.post('/api/reserv', async (req, res) => {
     organization,
   } = req.body;
 
-
   // Kötelező mezők ellenőrzése
   if (!fullname || !roomtype || !phone || !email || !date || !startTime || !duration || !people) {
     return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
@@ -633,11 +644,9 @@ app.post('/api/reserv', async (req, res) => {
     let endTime;
 
     if (duration === 'Teljes nap') {
-      // Teljes nap esetén startTime 09:00, endTime 17:00
       actualStartTime = '09:00';
       endTime = '17:00';
     } else {
-      // Más esetben kiszámoljuk az endTime-ot
       endTime = calculateEndTime(startTime, actualDuration);
     }
 
@@ -649,7 +658,7 @@ app.post('/api/reserv', async (req, res) => {
       email,
       date,
       startTime: actualStartTime,
-      originalStartTime: duration === 'Teljes nap' ? startTime : null, // Ha teljes nap, itt az eredeti kezdés
+      originalStartTime: duration === 'Teljes nap' ? startTime : null,
       endTime,
       duration: actualDuration,
       people: parseInt(people),
@@ -662,10 +671,20 @@ app.post('/api/reserv', async (req, res) => {
       createdAt: new Date(),
     };
 
-    const bookingResult = await db.collection('Reservation').insertOne(newBooking);
+    // 🔑 insertOne + duplikált hibakezelés
+    let bookingResult;
+    try {
+      bookingResult = await db.collection('Reservation').insertOne(newBooking);
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(400).json({
+          error: 'Erre az időpontra már van foglalás!',
+        });
+      }
+      throw err;
+    }
 
-    // Szoba frissítése - ha szükséges, itt is lehet, vagy külön endpointon
-
+    // Szoba frissítése
     const room = await db.collection('Rooms').findOne({ name: roomtype });
     if (!room) {
       return res.status(404).json({ error: 'A kiválasztott szoba nem található.' });
@@ -674,14 +693,12 @@ app.post('/api/reserv', async (req, res) => {
     const updatedDates = room.dates || {};
 
     if (!updatedDates[date]) {
-      // Ha nincs ilyen dátum, inicializáljuk üres tömbbel
       await db.collection('Rooms').updateOne(
         { _id: room._id },
         { $set: { [`dates.${date}`]: [] } }
       );
     }
 
-    // Az időintervallum hozzáadása az adott nap tömbjéhez
     await db.collection('Rooms').updateOne(
       { _id: room._id },
       { $push: { [`dates.${date}`]: { startTime: actualStartTime, endTime } } }
@@ -699,16 +716,15 @@ app.post('/api/reserv', async (req, res) => {
       );
     }
 
-    // Létrehozunk egy transporter-t (pl. Gmail használatával)
+    // --- EMAIL USERNEK ---
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
+        pass: process.env.GMAIL_PASS
       }
     });
 
-    // Email opciók
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: newBooking.email,
@@ -725,52 +741,22 @@ app.post('/api/reserv', async (req, res) => {
   <head>
     <meta charset="UTF-8" />
     <title>Sikeres Foglalás</title>
-    <meta name="color-scheme" content="light">
-    <meta name="supported-color-schemes" content="light">
   </head>
   <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
-
-    <div class="email-container" style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
-
-      <!-- Logo fix fehér hátterű kép, NE filterezd -->
-      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto; border:0; filter:none;" class="no-invert" />
-
-      <!-- Cím -->
-      <h2 style="font-size:16px; font-weight:500; margin-top:50px; margin-bottom:30px; text-transform:uppercase; color:#000;">
-        Sikeres foglalás!
-      </h2>
-
-      <!-- Leírás -->
-      <p style="font-size:15px; color:#333; margin-bottom:40px;">
-        Köszönjük foglalásodat, a foglalásod részleteit bármikor megtudod tekinteni a fiókodban
-      </p>
-
-      <p style="font-size:15px; color:#333; margin-bottom:40px;">
-        Foglalásod azonostítója
-      </p>
-      <div  
-         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
-        ${bookingResult.insertedId}
-      </div>
-
-      <p style="font-size:15px; color:#333; margin-bottom:40px;">
-        Foglalásod időpontja
-      </p>
-      <div  
-         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
-        ${newBooking.date + " " + newBooking.startTime + " " + newBooking.endTime}
-      </div>
-
-      <p style="font-size:15px; color:#333; margin-bottom:40px;">
-        A következő emailben csatolt díjbekérő dokumentumban található számlaszámra kell utalni a fizetendő összeget
-      </p>
+    <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
+      <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Sikeres foglalás!</h2>
+      <p>Köszönjük foglalásodat, a részleteket bármikor megtudod tekinteni a fiókodban.</p>
+      <p>Foglalásod azonosítója:</p>
+      <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${bookingResult.insertedId}</div>
+      <p>Időpont:</p>
+      <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${newBooking.date + " " + newBooking.startTime + " " + newBooking.endTime}</div>
+      <p>A következő emailben csatolt díjbekérő dokumentumban található számlaszámra kell utalni a fizetendő összeget.</p>
     </div>
   </body>
-</html>
-`
+</html>`
     };
 
-    // Email küldés
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         return console.error('Hiba az email küldésekor:', error);
@@ -778,20 +764,19 @@ app.post('/api/reserv', async (req, res) => {
       console.log('Email elküldve:', info.response);
     });
 
-
+    // --- EMAIL ADMINNAK ---
     const transporter2boss = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS // nem a rendes jelszó, hanem app password
+        pass: process.env.GMAIL_PASS
       }
     });
 
-    // Email opciók
     const mailOptions2boss = {
       from: process.env.GMAIL_USER,
       to: process.env.GMAIL_USER,
-      subject: 'LUMERO | Fogalás érkezett🎉',
+      subject: 'LUMERO | Foglalás érkezett🎉',
       attachments: [
         {
           filename: 'LUMERO.png',
@@ -804,32 +789,17 @@ app.post('/api/reserv', async (req, res) => {
   <head>
     <meta charset="UTF-8" />
     <title>Foglalás érkezett</title>
-    <meta name="color-scheme" content="light">
-    <meta name="supported-color-schemes" content="light">
   </head>
   <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
-
-    <div class="email-container" style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
-
-      <!-- Logo fix fehér hátterű kép, NE filterezd -->
-      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto; border:0; filter:none;" class="no-invert" />
-
-      <!-- Cím -->
-      <h2 style="font-size:16px; font-weight:500; margin-top:50px; margin-bottom:30px; text-transform:uppercase; color:#000;">
-        Új Foglalás érkezett!
-      </h2>
-
-      <a href="${process.env.DOMAIN}admin" 
-         style="display:inline-block; background-color:#000000; color:#ffffff; padding:14px 28px; text-decoration:none; font-size:15px; font-weight:500;">
-         Ide kattintva látod a részleteket
-      </a>
+    <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
+      <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Új Foglalás érkezett!</h2>
+      <a href="${process.env.DOMAIN}admin" style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">Ide kattintva látod a részleteket</a>
     </div>
   </body>
-</html>
-`
+</html>`
     };
 
-    // Email küldés
     transporter2boss.sendMail(mailOptions2boss, (error, info) => {
       if (error) {
         return console.error('Hiba az email küldésekor:', error);
@@ -837,15 +807,15 @@ app.post('/api/reserv', async (req, res) => {
       console.log('Email elküldve:', info.response);
     });
 
+    // --- VÉGÜL ---
     res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
-
-
 
   } catch (err) {
     console.error('Szerverhiba:', err);
     res.status(500).json({ error: 'Szerverhiba' });
   }
 });
+
 
 
 
