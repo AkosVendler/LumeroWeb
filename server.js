@@ -806,10 +806,38 @@ app.post('/api/reserv', async (req, res) => {
       }
       console.log('Email elküldve:', info.response);
     });
-
-    await addBookingToGoogleCalendar(newBooking);
-
+    
     // --- VÉGÜL ---
+    res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
+
+  }
+
+  // --- GOOGLE CALENDAR ---
+    const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, 'base64').toString('utf-8'));
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/calendar'],
+    });
+    const calendar = google.calendar({ version: 'v3', auth });
+
+    const event = {
+      summary: `${newBooking.fullname} - ${newBooking.roomtype}`,
+      description: `
+Email: ${newBooking.email}
+Telefon: ${newBooking.phone}
+Szoba: ${newBooking.roomtype}
+Üzenet: ${newBooking.message || 'nincs'}
+Extras: ${newBooking.extras.decoration ? 'Dekoráció, ' : ''}${newBooking.extras.catering ? 'Catering, ' : ''}${newBooking.extras.organization ? 'Szervezés' : ''}
+      `,
+      start: { dateTime: new Date(`${newBooking.date}T${newBooking.startTime}:00`).toISOString(), timeZone: 'Europe/Budapest' },
+      end: { dateTime: new Date(`${newBooking.date}T${newBooking.endTime}:00`).toISOString(), timeZone: 'Europe/Budapest' }
+    };
+
+    await calendar.events.insert({
+      calendarId: 'cb7617aede70103cbd5481141be79b3a20ae6e12d054da5f17f8c5d1d74dc503@group.calendar.google.com',
+      requestBody: event
+    });
+
     res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
 
   } catch (err) {
@@ -819,51 +847,7 @@ app.post('/api/reserv', async (req, res) => {
 });
 
 
-async function addBookingToGoogleCalendar(booking) {
-  try {
-    // Service Account JSON dekódolása Base64-ből
-    const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, 'base64').toString('utf-8'));
 
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
-    });
-
-    const calendar = google.calendar({ version: 'v3', auth });
-
-    const event = {
-      summary: `${booking.fullname} - ${booking.roomtype}`,
-      description: `
-Email: ${booking.email}
-Telefon: ${booking.phone}
-Szoba: ${booking.roomtype}
-Üzenet: ${booking.message || 'nincs'}
-Extras: ${booking.extras.decoration ? 'Dekoráció, ' : ''}${booking.extras.catering ? 'Catering, ' : ''}${booking.extras.organization ? 'Szervezés' : ''}
-      `,
-      start: {
-        dateTime: new Date(`${booking.date}T${booking.startTime}:00`).toISOString(),
-        timeZone: 'Europe/Budapest',
-      },
-      end: {
-        dateTime: new Date(`${booking.date}T${booking.endTime}:00`).toISOString(),
-        timeZone: 'Europe/Budapest',
-      },
-      // Attendees nélkül, mert sima Gmail fiókkal nem megy
-    };
-
-    const response = await calendar.events.insert({
-      calendarId: 'cb7617aede70103cbd5481141be79b3a20ae6e12d054da5f17f8c5d1d74dc503@group.calendar.google.com',
-      requestBody: event,
-    });
-
-    console.log('Google Calendar event létrehozva:', response.data.htmlLink);
-    return response.data;
-
-  } catch (err) {
-    console.error('Hiba a Google Calendar esemény létrehozásakor:', err);
-    throw err;
-  }
-}
 
 
 function authMiddleware(req, res, next) {
