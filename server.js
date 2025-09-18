@@ -605,8 +605,6 @@ function calculateEndTime(startTime, duration) {
 
 
 
-// Unique index létrehozása (szerver induláskor fusson le egyszer)
-const CREDENTIALS_PATH = path.join(process.cwd(), 'service-account.json');
 
 app.post('/api/reserv', async (req, res) => {
 
@@ -823,8 +821,11 @@ app.post('/api/reserv', async (req, res) => {
 
 async function addBookingToGoogleCalendar(booking) {
   try {
+    // Service Account JSON dekódolása Base64-ből
+    const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, 'base64').toString('utf-8'));
+
     const auth = new google.auth.GoogleAuth({
-      keyFile: CREDENTIALS_PATH,
+      credentials,
       scopes: ['https://www.googleapis.com/auth/calendar'],
     });
 
@@ -847,15 +848,17 @@ Extras: ${booking.extras.decoration ? 'Dekoráció, ' : ''}${booking.extras.cate
         dateTime: new Date(`${booking.date}T${booking.endTime}:00`).toISOString(),
         timeZone: 'Europe/Budapest',
       },
+      // Attendees nélkül, mert sima Gmail fiókkal nem megy
     };
 
     const response = await calendar.events.insert({
-      calendarId: process.env.CALENDAR_ID,
+      calendarId: 'cb7617aede70103cbd5481141be79b3a20ae6e12d054da5f17f8c5d1d74dc503@group.calendar.google.com',
       requestBody: event,
     });
 
     console.log('Google Calendar event létrehozva:', response.data.htmlLink);
     return response.data;
+
   } catch (err) {
     console.error('Hiba a Google Calendar esemény létrehozásakor:', err);
     throw err;
