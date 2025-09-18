@@ -758,7 +758,7 @@ Extras: ${newBooking.extras.decoration ? 'Dekoráció, ' : ''}${newBooking.extra
     };
 
     await calendar.events.insert({
-      calendarId: process.env.GOOGLE_CALENDAR_ID,
+      calendarId: process.env.CALENDAR_ID,
       requestBody: event
     });
 
