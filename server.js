@@ -737,8 +737,12 @@ app.post('/api/reserv', async (req, res) => {
 
     // --- GOOGLE CALENDAR ---
 
+    const credentials = JSON.parse(
+      Buffer.from(process.env.SERVICE_ACCOUNT, 'base64').toString('utf-8')
+    );
+
     const auth = new google.auth.GoogleAuth({
-      keyFile: path.join(process.cwd(), 'service-account.json'), // JSON fájl útvonala
+      credentials,
       scopes: ['https://www.googleapis.com/auth/calendar'],
     });
     
