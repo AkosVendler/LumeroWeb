@@ -606,7 +606,7 @@ function calculateEndTime(startTime, duration) {
 
 
 // Unique index létrehozása (szerver induláskor fusson le egyszer)
-const CREDENTIALS_PATH = './service-account.json';
+const CREDENTIALS_PATH = path.join(process.cwd(), 'service-account.json');
 
 app.post('/api/reserv', async (req, res) => {
 
