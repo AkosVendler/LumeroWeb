@@ -736,11 +736,12 @@ app.post('/api/reserv', async (req, res) => {
     transporter2boss.sendMail(mailOptions2boss, (error, info) => { if (error) console.error('Hiba az email küldésekor:', error); });
 
     // --- GOOGLE CALENDAR ---
-    const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, 'base64').toString('utf-8'));
+
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      keyFile: path.join(process.cwd(), 'service-account.json'), // JSON fájl útvonala
       scopes: ['https://www.googleapis.com/auth/calendar'],
     });
+    
     const calendar = google.calendar({ version: 'v3', auth });
 
     const event = {
@@ -757,7 +758,7 @@ Extras: ${newBooking.extras.decoration ? 'Dekoráció, ' : ''}${newBooking.extra
     };
 
     await calendar.events.insert({
-      calendarId: 'cb7617aede70103cbd5481141be79b3a20ae6e12d054da5f17f8c5d1d74dc503@group.calendar.google.com',
+      calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event
     });
 
