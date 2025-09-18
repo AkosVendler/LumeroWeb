@@ -15,6 +15,8 @@ const multer = require('multer');
 const fs = require('fs');
 const { log } = require('console');
 const cron = require('node-cron');
+const { google } = require('googleapis');
+
 
 // ✅ CORS & static
 app.use(cors());
@@ -604,7 +606,7 @@ function calculateEndTime(startTime, duration) {
 
 
 // Unique index létrehozása (szerver induláskor fusson le egyszer)
-
+const CREDENTIALS_PATH = './service-account.json';
 
 app.post('/api/reserv', async (req, res) => {
 
@@ -807,6 +809,8 @@ app.post('/api/reserv', async (req, res) => {
       console.log('Email elküldve:', info.response);
     });
 
+    await addBookingToGoogleCalendar(newBooking);
+
     // --- VÉGÜL ---
     res.status(201).json({ message: 'Sikeres foglalás!', bookingId: bookingResult.insertedId });
 
@@ -817,7 +821,46 @@ app.post('/api/reserv', async (req, res) => {
 });
 
 
+async function addBookingToGoogleCalendar(booking) {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      keyFile: CREDENTIALS_PATH,
+      scopes: ['https://www.googleapis.com/auth/calendar'],
+    });
 
+    const calendar = google.calendar({ version: 'v3', auth });
+
+    const event = {
+      summary: `${booking.fullname} - ${booking.roomtype}`,
+      description: `
+Email: ${booking.email}
+Telefon: ${booking.phone}
+Szoba: ${booking.roomtype}
+Üzenet: ${booking.message || 'nincs'}
+Extras: ${booking.extras.decoration ? 'Dekoráció, ' : ''}${booking.extras.catering ? 'Catering, ' : ''}${booking.extras.organization ? 'Szervezés' : ''}
+      `,
+      start: {
+        dateTime: new Date(`${booking.date}T${booking.startTime}:00`).toISOString(),
+        timeZone: 'Europe/Budapest',
+      },
+      end: {
+        dateTime: new Date(`${booking.date}T${booking.endTime}:00`).toISOString(),
+        timeZone: 'Europe/Budapest',
+      },
+    };
+
+    const response = await calendar.events.insert({
+      calendarId: process.env.CALENDAR_ID,
+      requestBody: event,
+    });
+
+    console.log('Google Calendar event létrehozva:', response.data.htmlLink);
+    return response.data;
+  } catch (err) {
+    console.error('Hiba a Google Calendar esemény létrehozásakor:', err);
+    throw err;
+  }
+}
 
 
 function authMiddleware(req, res, next) {
