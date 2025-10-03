@@ -26,12 +26,12 @@ app.use(cookieParser());
 
 import net from 'net';
 
-const client = net.createConnection({ host: 'smtp.gmail.com', port: 587 }, () => {
+const mailclient = net.createConnection({ host: 'smtp.gmail.com', port: 587 }, () => {
   console.log('Kapcsolat sikerült!');
-  client.end();
+  mailclient.end();
 });
 
-client.on('error', (err) => {
+mailclient.on('error', (err) => {
   console.error('Hiba a kapcsolódáskor:', err);
 });
 
