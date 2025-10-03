@@ -336,6 +336,10 @@ const logoContent = fs.readFileSync(logoPath).toString('base64');
 // --- EMAIL USERNEK ---
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+    console.log('newBooking.email:', newBooking.email);
+console.log('FROM_EMAIL:', process.env.FROM_EMAIL);
+
+
     const msgUser = {
       to: newBooking.email,
       from: process.env.GMAIL_USER,
