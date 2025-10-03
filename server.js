@@ -16,6 +16,8 @@ const { log } = require('console');
 const cron = require('node-cron');
 const { google } = require('googleapis');
 const net = require('net');
+import sgMail from '@sendgrid/mail';
+
 
 // ✅ CORS & static
 app.use(cors());
@@ -387,52 +389,79 @@ transporter.sendMail(mailOptions, (error, info) => {
   }
 });
 
-// --- EMAIL ADMINNAK ---
-const transporter2boss = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 10000,
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const mailOptions2boss = {
-  from: process.env.GMAIL_USER,
-  to: process.env.GMAIL_USER,
+    const msgUser = {
+      to: newBooking.email,
+      from: process.env.GMAIL_USER,
+      subject: 'LUMERO | Sikeres foglalás🎉',
+      attachments: [
+        {
+          filename: 'LUMERO.png',
+          path: './public/assets/LUMERO.png',
+          cid: 'logo123'
+        }
+      ],
+      html: `<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sikeres Foglalás</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
+    <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
+      <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Sikeres foglalás!</h2>
+      <p>Köszönjük foglalásodat, a részleteket bármikor megtudod tekinteni a fiókodban.</p>
+      <p>Foglalásod azonosítója:</p>
+      <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${bookingResult.insertedId}</div>
+      <p>Időpont:</p>
+      <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${newBooking.date + " " + newBooking.startTime + " " + newBooking.endTime}</div>
+      <p>A következő emailben csatolt díjbekérő dokumentumban található számlaszámra kell utalni a fizetendő összeget.</p>
+    </div>
+  </body>
+</html>`
+    }
+
+// --- EMAIL ADMINNAK ---
+const msgAdmin = {
+  to: process.env.FROM_EMAIL,
+  from: process.env.FROM_EMAIL,
   subject: 'LUMERO | Foglalás érkezett🎉',
   attachments: [
-    {
-      filename: 'LUMERO.png',
-      path: './public/assets/LUMERO.png',
-      cid: 'logo123'
-    }
-  ],
-  html: `<!DOCTYPE html>
+        {
+          filename: 'LUMERO.png',
+          path: './public/assets/LUMERO.png',
+          cid: 'logo123'
+        }
+      ],
+      html: `<!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8" /><title>Foglalás érkezett</title></head>
-<body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
-  <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
-    <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
-    <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Új Foglalás érkezett!</h2>
-    <a href="${process.env.DOMAIN}admin" style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">Ide kattintva látod a részleteket</a>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Foglalás érkezett</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
+    <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
+      <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
+      <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Új Foglalás érkezett!</h2>
+      <a href="${process.env.DOMAIN}admin" style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">Ide kattintva látod a részleteket</a>
+    </div>
+  </body>
 </html>`
 };
 
-transporter2boss.sendMail(mailOptions2boss, (error, info) => {
-  if (error) {
-    console.error('Hiba az email küldésekor (admin):', error);
-  } else {
-    console.log('Email elküldve (admin):', info.response);
-  }
-});
+
+
+try {
+  await sgMail.send(msgUser);
+  console.log('Email elküldve usernek');
+
+  await sgMail.send(msgAdmin);
+  console.log('Email elküldve adminnak');
+} catch (error) {
+  console.error('Hiba az email küldésekor:', error);
+}
 
 // Google Calendar hozzáadása
 await addBookingToGoogleCalendar(newBooking);
