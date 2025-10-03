@@ -3,7 +3,6 @@ const { MongoClient, ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
-const stripe = require('stripe')('sk_test_51RNbIjIEf5NoZIKrYFFGEbfVka0Qi8HnLayFwYUasL1Y3B9lClrZ5J2UqlvC1vjvQexBQVVElY1F1bOu7GHXnfiM005nC7pF0g');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
