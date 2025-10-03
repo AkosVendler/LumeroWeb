@@ -24,6 +24,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(cookieParser());
 
+import net from 'net';
+
+const client = net.createConnection({ host: 'smtp.gmail.com', port: 587 }, () => {
+  console.log('Kapcsolat sikerült!');
+  client.end();
+});
+
+client.on('error', (err) => {
+  console.error('Hiba a kapcsolódáskor:', err);
+});
+
+
 const uri = process.env.URI; // vagy amit használsz
 const client = new MongoClient(uri);
 let db;
