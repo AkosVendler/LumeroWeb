@@ -1,26 +1,21 @@
-import express from 'express';
-import { MongoClient, ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
-import cookieParser from 'cookie-parser';
-import path from 'path';
-import multer from 'multer';
-import fs from 'fs';
-import { log } from 'console';
-import cron from 'node-cron';
-import { google } from 'googleapis';
-import net from 'net';
-
-
+const express = require('express');
+const { MongoClient, ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const cors = require('cors');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
+const { log } = require('console');
+const cron = require('node-cron');
+const { google } = require('googleapis');
+const net = require('net');
 
 // ✅ CORS & static
 app.use(cors());
