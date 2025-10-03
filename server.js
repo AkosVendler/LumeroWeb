@@ -432,11 +432,16 @@ app.post('/api/reserv', async (req, res) => {
 });
 
 
+const credentials = JSON.parse(
+  Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, "base64").toString()
+);
+
+
 async function addBookingToGoogleCalendar(booking) {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: process.env.SERVICE_ACCOUNT,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
+      credentials, // itt adjuk át a JSON-t
+      scopes: ["https://www.googleapis.com/auth/calendar"],
     });
 
     const calendar = google.calendar({ version: 'v3', auth });
