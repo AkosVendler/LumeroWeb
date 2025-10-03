@@ -50,21 +50,6 @@ homeLink.addEventListener('click', (e) => {
     newsContent.style.display = 'none';
 });
 
-notiLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    ordersSection.style.display = 'none';
-    mainContent.style.display = 'none';
-    newsContent.style.display = 'none';
-    notiContent.style.display = 'block';
-
-    // Ez a sor csak akkor működik, ha a DOM már tartalmazza a greeting elemet
-    const greetingEl = document.querySelector('.admin-notifications .adminGreeting');
-    if (greetingEl) {
-        greetingEl.textContent = `SZIA, ${adminNameValue.toUpperCase()}!`;
-    } else {
-        console.warn('Nem található greeting elem a noti részben!');
-    }
-});
 
 newsLink.addEventListener('click', (e) => {
     e.preventDefault();
