@@ -15,7 +15,6 @@ const fs = require('fs');
 const { log } = require('console');
 const cron = require('node-cron');
 const { google } = require('googleapis');
-const net = require('net');
 const sgMail = require('@sendgrid/mail');
 
 
@@ -25,16 +24,6 @@ app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(cookieParser());
-
-
-const mailclient = net.createConnection({ host: 'smtp.gmail.com', port: 587 }, () => {
-  console.log('Kapcsolat sikerült!');
-  mailclient.end();
-});
-
-mailclient.on('error', (err) => {
-  console.error('Hiba a kapcsolódáskor:', err);
-});
 
 
 const uri = process.env.URI; // vagy amit használsz
@@ -343,52 +332,6 @@ app.post('/api/reserv', async (req, res) => {
 
 
 // --- EMAIL USERNEK ---
-const transporter = nodemailer.createTransport({
-  host: 'smtp.sendgrid.net',
-  port: 587,
-  auth: {
-    user: 'apikey', // fix, így kell a SendGrid SMTP-hez
-    pass: process.env.SENDGRID_API_KEY
-  }
-});
-
-const mailOptions = {
-  from: process.env.GMAIL_USER,
-  to: newBooking.email,
-  subject: 'LUMERO | Sikeres Foglalás🎉',
-  attachments: [
-    {
-      filename: 'LUMERO.png',
-      path: './public/assets/LUMERO.png',
-      cid: 'logo123'
-    }
-  ],
-  html: `<!DOCTYPE html>
-<html lang="hu">
-<head><meta charset="UTF-8" /><title>Sikeres Foglalás</title></head>
-<body style="margin:0; padding:0; background-color:#ffffff; color:#000000; font-family: Arial, sans-serif;">
-  <div style="max-width:600px; margin:0 auto; padding:40px; text-align:center; background-color:#ffffff;">
-    <img src="cid:logo123" alt="Logo" width="200" style="display:block; margin: 0 auto;" />
-    <h2 style="font-size:16px; margin-top:50px; margin-bottom:30px;">Sikeres foglalás!</h2>
-    <p>Köszönjük foglalásodat, a részleteket bármikor megtudod tekinteni a fiókodban.</p>
-    <p>Foglalásod azonosítója:</p>
-    <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${bookingResult.insertedId}</div>
-    <p>Időpont:</p>
-    <div style="display:inline-block; background-color:#000; color:#fff; padding:14px 28px;">${newBooking.date} ${newBooking.startTime} - ${newBooking.endTime}</div>
-    <p>A következő emailben csatolt díjbekérő dokumentumban található számlaszámra kell utalni a fizetendő összeget.</p>
-  </div>
-</body>
-</html>`
-};
-
-transporter.sendMail(mailOptions, (error, info) => {
-  if (error) {
-    console.error('Hiba az email küldésekor (user):', error);
-  } else {
-    console.log('Email elküldve (user):', info.response);
-  }
-});
-
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
     const msgUser = {
