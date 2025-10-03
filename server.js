@@ -17,6 +17,8 @@ import { google } from 'googleapis';
 import net from 'net';
 
 
+const app = express();
+
 // ✅ CORS & static
 app.use(cors());
 app.use(express.static('public'));
