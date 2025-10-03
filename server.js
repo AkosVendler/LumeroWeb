@@ -19,6 +19,9 @@ import net from 'net';
 
 const app = express();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // ✅ CORS & static
 app.use(cors());
 app.use(express.static('public'));
