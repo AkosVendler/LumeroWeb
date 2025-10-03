@@ -340,6 +340,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
       subject: 'LUMERO | Sikeres foglalás🎉',
       attachments: [
         {
+          content: logoContent,
           filename: 'LUMERO.png',
           path: './public/assets/LUMERO.png',
           cid: 'logo123'
@@ -373,6 +374,7 @@ const msgAdmin = {
   subject: 'LUMERO | Foglalás érkezett🎉',
   attachments: [
         {
+          content: logoContent,
           filename: 'LUMERO.png',
           path: './public/assets/LUMERO.png',
           cid: 'logo123'
