@@ -330,6 +330,8 @@ app.post('/api/reserv', async (req, res) => {
       { $push: { [`dates.${date}`]: { startTime: actualStartTime, endTime } } }
     );
 
+    const logoPath = path.join(process.cwd(), 'public/assets/LUMERO.png');
+const logoContent = fs.readFileSync(logoPath).toString('base64');
 
 // --- EMAIL USERNEK ---
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -340,10 +342,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
       subject: 'LUMERO | Sikeres foglalás🎉',
       attachments: [
         {
-          content: logoContent,
-          filename: 'LUMERO.png',
-          path: './public/assets/LUMERO.png',
-          cid: 'logo123'
+      content: logoContent,
+      filename: 'LUMERO.png',
+      type: 'image/png',
+      disposition: 'inline',
+      content_id: 'logo123'
         }
       ],
       html: `<!DOCTYPE html>
@@ -374,10 +377,11 @@ const msgAdmin = {
   subject: 'LUMERO | Foglalás érkezett🎉',
   attachments: [
         {
-          content: logoContent,
-          filename: 'LUMERO.png',
-          path: './public/assets/LUMERO.png',
-          cid: 'logo123'
+      content: logoContent,
+      filename: 'LUMERO.png',
+      type: 'image/png',
+      disposition: 'inline',
+      content_id: 'logo123'
         }
       ],
       html: `<!DOCTYPE html>
