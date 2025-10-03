@@ -433,7 +433,7 @@ app.post('/api/reserv', async (req, res) => {
 
 
 const credentials = JSON.parse(
-  Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, "base64").toString()
+  Buffer.from(process.env.SERVICE_ACCOUNT, "base64").toString()
 );
 
 
