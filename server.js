@@ -16,7 +16,7 @@ const { log } = require('console');
 const cron = require('node-cron');
 const { google } = require('googleapis');
 const net = require('net');
-import sgMail from '@sendgrid/mail';
+const sgMail = require('@sendgrid/mail');
 
 
 // ✅ CORS & static
