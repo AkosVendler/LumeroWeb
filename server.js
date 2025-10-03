@@ -332,7 +332,7 @@ app.post('/api/reserv', async (req, res) => {
     // --- EMAIL USERNEK ---
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 465, // Use 465 for SSL or 587 for TLS
+      port: 587, // Use 465 for SSL or 587 for TLS
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
