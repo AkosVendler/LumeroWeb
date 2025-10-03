@@ -337,7 +337,7 @@ const logoContent = fs.readFileSync(logoPath).toString('base64');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
     console.log('newBooking.email:', newBooking.email);
-console.log('FROM_EMAIL:', process.env.FROM_EMAIL);
+console.log('GMAIL_USER:', process.env.GMAIL_USER);
 
 
     const msgUser = {
@@ -376,8 +376,8 @@ console.log('FROM_EMAIL:', process.env.FROM_EMAIL);
 
 // --- EMAIL ADMINNAK ---
 const msgAdmin = {
-  to: process.env.FROM_EMAIL,
-  from: process.env.FROM_EMAIL,
+  to: process.env.GMAIL_USER,
+  from: process.env.GMAIL_USER,
   subject: 'LUMERO | Foglalás érkezett🎉',
   attachments: [
         {
