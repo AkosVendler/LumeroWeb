@@ -239,8 +239,7 @@ function calculateEndTime(startTime, duration) {
 
 
 
-// Unique index létrehozása (szerver induláskor fusson le egyszer)
-const CREDENTIALS_PATH = process.env.SERVICE_ACCOUNT;
+
 
 app.post('/api/reserv', async (req, res) => {
 
@@ -436,7 +435,7 @@ app.post('/api/reserv', async (req, res) => {
 async function addBookingToGoogleCalendar(booking) {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: CREDENTIALS_PATH,
+      keyFile: process.env.SERVICE_ACCOUNT,
       scopes: ['https://www.googleapis.com/auth/calendar'],
     });
 
