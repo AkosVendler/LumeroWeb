@@ -342,17 +342,12 @@ app.post('/api/reserv', async (req, res) => {
 
 // --- EMAIL USERNEK ---
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587, // TLS
-  secure: false, // TLS-hez false, SSL-hez 465 -> true
+  host: 'smtp.sendgrid.net',
+  port: 587,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false // Render esetén kellhet
-  },
-  connectionTimeout: 10000, // 10 másodperc timeout
+    user: 'apikey', // fix, így kell a SendGrid SMTP-hez
+    pass: process.env.SENDGRID_API_KEY
+  }
 });
 
 const mailOptions = {
