@@ -24,7 +24,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(cookieParser());
 
-import net from 'net';
 
 const mailclient = net.createConnection({ host: 'smtp.gmail.com', port: 587 }, () => {
   console.log('Kapcsolat sikerült!');
